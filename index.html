@@ -7,95 +7,123 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-color: #f0f2f5;
+            --text-color: #333;
+            --card-bg-color: #fff;
+            --system1-bg: #e0e7ff; /* Blue-50 */
+            --system1-text: #4338ca; /* Indigo-700 */
+            --system2-bg: #d1fae5; /* Emerald-50 */
+            --system2-text: #065f46; /* Emerald-700 */
+            --accent-color-s1: #6366f1; /* Indigo-500 */
+            --accent-color-s2: #10b981; /* Emerald-500 */
+            --error-bg: #fee2e2;
+            --error-text: #b91c1c;
+            --info-bg: #dbeafe;
+            --info-text: #1e40af;
+            --purple-bg: #ede9fe;
+            --purple-text: #6b21a8;
+        }
+
+        body.dark-mode {
+            --bg-color: #1a202c; /* Gray-900 */
+            --text-color: #e2e8f0; /* Gray-200 */
+            --card-bg-color: #2d3748; /* Gray-800 */
+            --system1-bg: #4a5568; /* Gray-700 */
+            --system1-text: #9f7aea; /* Purple-400 */
+            --system2-bg: #48bb78; /* Green-500 */
+            --system2-text: #fff;
+            --accent-color-s1: #a78bfa; /* Violet-400 */
+            --accent-color-s2: #38b2ac; /* Teal-500 */
+            --error-bg: #7f1d1d; /* Red-900 */
+            --error-text: #fca5a5; /* Red-300 */
+            --info-bg: #1e3a8a; /* Blue-900 */
+            --info-text: #bfdbfe; /* Blue-200 */
+            --purple-bg: #5b21b6; /* Violet-700 */
+            --purple-text: #ddd6fe; /* Violet-200 */
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5;
-            color: #333;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         .container {
-            max-width: 1200px;
-            margin: 40px auto;
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            padding: 32px;
+            background-color: var(--card-bg-color);
+            transition: background-color 0.3s ease;
         }
-        .bar-wrapper {
-            position: relative;
-            width: 100%;
-            height: 150px; /* Çubukların sabit yüksekliği */
-            background-color: #e0e7ff; /* Arka plan rengi */
-            border-radius: 8px;
-            overflow: hidden; /* Taşmayı engellemek için */
-            margin-bottom: 20px;
-            display: flex;
-            align-items: flex-end; /* Çubukların alttan başlaması için */
-            justify-content: center;
-            padding: 8px; /* Metnin çubuk içinde kalması için */
+        .system-panel {
+            background-color: var(--system1-bg); /* Use for S1 */
+            transition: background-color 0.3s ease;
         }
-        .bar-comparison-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            height: 150px; /* Çubukların sabit yüksekliği */
-            background-color: #f3f4f6; /* Arka plan rengi */
-            border-radius: 8px;
-            overflow: hidden;
-            padding: 8px;
-            margin-bottom: 20px;
+        .system-panel-s2 {
+            background-color: var(--system2-bg); /* Use for S2 */
+            transition: background-color 0.3s ease;
         }
-        .single-bar-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: center;
-            margin: 0 8px;
+        .system-panel h2 {
+            color: var(--system1-text);
+            transition: color 0.3s ease;
+        }
+        .system-panel-s2 h2 {
+            color: var(--system2-text);
+            transition: color 0.3s ease;
         }
         .bar-s1 {
-            width: 80%;
-            background: linear-gradient(to top, #6366f1, #818cf8); /* Sistem 1 için mavi gradyan */
-            border-radius: 6px;
-            transition: height 0.5s ease-out;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 0.9rem;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-            min-height: 20px; /* Görünürlük için minimum yükseklik */
+            background: linear-gradient(to top, var(--accent-color-s1), var(--accent-color-s1), var(--accent-color-s1)); /* Gradient with theme color */
+            transition: height 0.5s ease-out, background 0.3s ease;
         }
         .bar-s2 {
-            width: 80%;
-            background: linear-gradient(to top, #10b981, #34d399); /* Sistem 2 için yeşil gradyan */
-            border-radius: 6px;
-            transition: height 0.5s ease-out;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 0.9rem;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-            min-height: 20px; /* Görünürlük için minimum yükseklik */
+            background: linear-gradient(to top, var(--accent-color-s2), var(--accent-color-s2), var(--accent-color-s2)); /* Gradient with theme color */
+            transition: height 0.5s ease-out, background 0.3s ease;
+        }
+        .error-message {
+            background-color: var(--error-bg);
+            color: var(--error-text);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .info-message {
+            background-color: var(--info-bg);
+            color: var(--info-text);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .bottleneck-analysis {
+            background-color: var(--purple-bg);
+            color: var(--purple-text);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .comparison-results-section {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body class="p-6">
     <div class="container">
+        <div class="flex justify-end mb-4">
+            <button id="themeToggle" class="px-4 py-2 rounded-full bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100 shadow-md transition-colors duration-300">
+                Tema Değiştir
+            </button>
+        </div>
         <h1 class="text-4xl font-extrabold text-center text-gray-900 mb-8">Özel Sistem Karşılaştırma Aracı</h1>
 
         <!-- Sistem Seçim Alanı -->
         <div class="flex flex-col md:flex-row justify-center items-start gap-8 mb-8">
             <!-- Sistem 1 Bileşen Seçimi -->
-            <div class="w-full md:w-1/2 bg-indigo-50 p-6 rounded-lg shadow-md">
+            <div class="w-full md:w-1/2 bg-indigo-50 p-6 rounded-lg shadow-md system-panel">
                 <h2 class="text-2xl font-bold text-indigo-700 mb-6 text-center">Sistem 1</h2>
                 <div class="mb-4">
+                    <label for="s1-cpu-search" class="block text-md font-medium text-gray-700 mb-1">CPU Ara:</label>
+                    <input type="text" id="s1-cpu-search" placeholder="İşlemci Ara..." class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-md mb-2">
                     <label for="s1-cpu" class="block text-md font-medium text-gray-700 mb-1">İşlemci (CPU):</label>
                     <select id="s1-cpu" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-md rounded-md shadow-sm"></select>
                 </div>
                 <div class="mb-4">
+                    <label for="s1-gpu-search" class="block text-md font-medium text-gray-700 mb-1">GPU Ara:</label>
+                    <input type="text" id="s1-gpu-search" placeholder="Ekran Kartı Ara..." class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-md mb-2">
                     <label for="s1-gpu" class="block text-md font-medium text-gray-700 mb-1">Ekran Kartı (GPU):</label>
                     <select id="s1-gpu" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-md rounded-md shadow-sm"></select>
                 </div>
@@ -114,13 +142,17 @@
             </div>
 
             <!-- Sistem 2 Bileşen Seçimi -->
-            <div class="w-full md:w-1/2 bg-emerald-50 p-6 rounded-lg shadow-md">
+            <div class="w-full md:w-1/2 bg-emerald-50 p-6 rounded-lg shadow-md system-panel system-panel-s2">
                 <h2 class="text-2xl font-bold text-emerald-700 mb-6 text-center">Sistem 2</h2>
                 <div class="mb-4">
+                    <label for="s2-cpu-search" class="block text-md font-medium text-gray-700 mb-1">CPU Ara:</label>
+                    <input type="text" id="s2-cpu-search" placeholder="İşlemci Ara..." class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-md mb-2">
                     <label for="s2-cpu" class="block text-md font-medium text-gray-700 mb-1">İşlemci (CPU):</label>
                     <select id="s2-cpu" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-md rounded-md shadow-sm"></select>
                 </div>
                 <div class="mb-4">
+                    <label for="s2-gpu-search" class="block text-md font-medium text-gray-700 mb-1">GPU Ara:</label>
+                    <input type="text" id="s2-gpu-search" placeholder="Ekran Kartı Ara..." class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-md mb-2">
                     <label for="s2-gpu" class="block text-md font-medium text-gray-700 mb-1">Ekran Kartı (GPU):</label>
                     <select id="s2-gpu" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-md rounded-md shadow-sm"></select>
                 </div>
@@ -145,16 +177,26 @@
             </button>
         </div>
 
-        <div id="errorMessage" class="hidden mt-8 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md text-center"></div>
+        <div id="errorMessage" class="hidden mt-8 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md text-center error-message"></div>
 
         <!-- Karşılaştırma Sonuçları Alanı -->
-        <div id="comparisonResults" class="hidden border-t-2 border-gray-200 pt-8 mt-8">
+        <div id="comparisonResults" class="hidden border-t-2 border-gray-200 pt-8 mt-8 comparison-results-section">
             <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Sistem 1 <span class="text-indigo-500">vs</span> Sistem 2 Performans Karşılaştırması</h2>
 
             <!-- Genel Bilgiler -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-8">
-                <div id="system1Info" class="bg-indigo-50 p-6 rounded-lg shadow-md flex flex-col justify-between"></div>
-                <div id="system2Info" class="bg-emerald-50 p-6 rounded-lg shadow-md flex flex-col justify-between"></div>
+                <div id="system1Info" class="bg-indigo-50 p-6 rounded-lg shadow-md flex flex-col justify-between system-panel"></div>
+                <div id="system2Info" class="bg-emerald-50 p-6 rounded-lg shadow-md flex flex-col justify-between system-panel system-panel-s2"></div>
+            </div>
+
+            <!-- Toplam Puanlar -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-8 text-center text-xl font-bold">
+                <div class="p-4 rounded-lg bg-indigo-100 text-indigo-800 shadow-inner">
+                    Sistem 1 Toplam Puan: <span id="s1TotalScore"></span>
+                </div>
+                <div class="p-4 rounded-lg bg-emerald-100 text-emerald-800 shadow-inner">
+                    Sistem 2 Toplam Puan: <span id="s2TotalScore"></span>
+                </div>
             </div>
 
             <!-- Bileşen Bazında Karşılaştırma Barları -->
@@ -167,9 +209,9 @@
             </div>
 
             <!-- Darboğaz Sonuçları -->
-            <div id="bottleneckAnalysis" class="mt-10 p-6 bg-purple-50 border border-purple-200 rounded-lg text-purple-800"></div>
+            <div id="bottleneckAnalysis" class="mt-10 p-6 bg-purple-50 border border-purple-200 rounded-lg text-purple-800 bottleneck-analysis"></div>
 
-            <div class="mt-10 p-6 bg-blue-50 border border-blue-200 rounded-lg text-blue-800">
+            <div class="mt-10 p-6 bg-blue-50 border border-blue-200 rounded-lg text-blue-800 info-message">
                 <h3 class="text-xl font-semibold mb-3">Puanlama Hakkında Not:</h3>
                 <p class="mb-2">
                     <span class="font-bold">CPU</span> ve <span class="font-bold">GPU</span> puanları, yaklaşık PassMark benchmark sonuçlarına dayanmaktadır. Bu puanlar, bileşenlerin teorik performansını gösterir ve gerçek dünya performansı farklılık gösterebilir.
@@ -359,6 +401,33 @@
             });
         }
 
+        // Dropdown'ı filtreleme fonksiyonu
+        function filterDropdownOptions(selectElementId, searchInputId, data) {
+            const select = document.getElementById(selectElementId);
+            const searchInput = document.getElementById(searchInputId);
+            const searchTerm = searchInput.value.toLowerCase();
+
+            // Tüm seçenekleri gizle
+            for (let i = 0; i < select.options.length; i++) {
+                select.options[i].style.display = 'none';
+            }
+
+            // Arama terimine uyan seçenekleri göster
+            // Varsayılan "-- Seçin --" seçeneğini her zaman göster
+            select.options[0].style.display = 'block';
+
+            data.forEach(item => {
+                if (item.name.toLowerCase().includes(searchTerm) || item.details.toLowerCase().includes(searchTerm)) {
+                    // Option elementini bulmak için doğrudan select.querySelector kullan
+                    // veya option'lar tekrar oluşturuluyorsa populateDropdown'ı çağır
+                    const option = select.querySelector(`option[value="${item.id}"]`);
+                    if (option) {
+                        option.style.display = 'block';
+                    }
+                }
+            });
+        }
+
         // Darboğaz hesaplama fonksiyonu
         const calculateBottleneck = (cpuScore, gpuScore) => {
             if (!cpuScore || !gpuScore) {
@@ -420,8 +489,9 @@
             `;
         }
 
-        // Sayfa yüklendiğinde dropdown'ları doldur
+        // Sayfa yüklendiğinde dropdown'ları doldur ve olay dinleyicileri ayarla
         document.addEventListener('DOMContentLoaded', () => {
+            // Dropdown'ları doldur
             populateDropdown('s1-cpu', cpuData);
             populateDropdown('s1-gpu', gpuData);
             populateDropdown('s1-ram', ramData);
@@ -434,7 +504,13 @@
             populateDropdown('s2-storage', storageData);
             populateDropdown('s2-psu', psuData);
 
-            // Tüm seçim kutularına değişiklik olay dinleyicisi ekle
+            // Arama kutuları için olay dinleyicileri
+            document.getElementById('s1-cpu-search').addEventListener('input', () => filterDropdownOptions('s1-cpu', 's1-cpu-search', cpuData));
+            document.getElementById('s1-gpu-search').addEventListener('input', () => filterDropdownOptions('s1-gpu', 's1-gpu-search', gpuData));
+            document.getElementById('s2-cpu-search').addEventListener('input', () => filterDropdownOptions('s2-cpu', 's2-cpu-search', cpuData));
+            document.getElementById('s2-gpu-search').addEventListener('input', () => filterDropdownOptions('s2-gpu', 's2-gpu-search', gpuData));
+
+            // Tüm seçim kutularına değişiklik olay dinleyicisi ekle (sonuçları gizlemek için)
             const selects = document.querySelectorAll('select');
             selects.forEach(select => {
                 select.addEventListener('change', () => {
@@ -442,6 +518,24 @@
                     document.getElementById('errorMessage').classList.add('hidden');
                 });
             });
+
+            // Tema değiştirme butonu
+            const themeToggleBtn = document.getElementById('themeToggle');
+            themeToggleBtn.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                // Tema tercihini localStorage'da sakla
+                if (document.body.classList.contains('dark-mode')) {
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+
+            // Sayfa yüklendiğinde localStorage'dan tema tercihini kontrol et
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
         });
 
         // Karşılaştır düğmesine tıklama olay dinleyicisi
@@ -501,6 +595,12 @@
                 <p class="text-gray-700"><span class="font-semibold">PSU:</span> ${s2Psu ? s2Psu.name : 'Seçilmedi'}</p>
             `;
 
+            // Toplam Puanları Hesapla ve Güncelle
+            const s1TotalScore = (s1Cpu?.score || 0) + (s1Gpu?.score || 0) + (s1Ram?.score || 0) + (s1Storage?.score || 0) + (s1Psu?.score || 0);
+            const s2TotalScore = (s2Cpu?.score || 0) + (s2Gpu?.score || 0) + (s2Ram?.score || 0) + (s2Storage?.score || 0) + (s2Psu?.score || 0);
+            document.getElementById('s1TotalScore').textContent = s1TotalScore.toLocaleString();
+            document.getElementById('s2TotalScore').textContent = s2TotalScore.toLocaleString();
+
             // Karşılaştırma Çubuklarını Güncelle
             createComparisonBar('cpuComparisonBar', 'İşlemci (CPU) Performansı', s1Cpu.score, s2Cpu.score, maxScores.cpu);
             createComparisonBar('gpuComparisonBar', 'Ekran Kartı (GPU) Performansı', s1Gpu.score, s2Gpu.score, maxScores.gpu);
@@ -527,7 +627,11 @@
                 </div>
             `;
 
+            // Sonuçları göster ve animasyonu tetikle
             comparisonResultsElement.classList.remove('hidden');
+            comparisonResultsElement.style.animation = 'none'; // Animasyonu sıfırla
+            void comparisonResultsElement.offsetWidth; // DOM'u yeniden boyamaya zorla
+            comparisonResultsElement.style.animation = null; // Animasyonu tekrar uygula
         });
     </script>
 </body>
