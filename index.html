@@ -1,63 +1,463 @@
-!DOCTYPE html
-html lang=tr
-head
-    meta charset=UTF-8
-    meta name=viewport content=width=device-width, initial-scale=1.0
-    titleFPS Kıyaslama Tablosutitle
-    style
-        table {
-            width 100%;
-            border-collapse collapse;
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Özel Sistem Karşılaştırma Aracı</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
         }
-        th, td {
-            border 1px solid black;
-            padding 10px;
-            text-align center;
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            padding: 32px;
         }
-        th {
-            background-color #f4f4f4;
+        .bar-wrapper {
+            position: relative;
+            width: 100%;
+            height: 150px; /* Çubukların sabit yüksekliği */
+            background-color: #e0e7ff; /* Arka plan rengi */
+            border-radius: 8px;
+            overflow: hidden; /* Taşmayı engellemek için */
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-end; /* Çubukların alttan başlaması için */
+            justify-content: center;
+            padding: 8px; /* Metnin çubuk içinde kalması için */
         }
-    style
-head
-body
-    h2RX 570 ve Ryzen 5 2600X FPS Kıyaslamasıh2
-    table
-        tr
-            thOyunth
-            th1080p Ultrath
-            th1080p Highth
-            th1080p Mediumth
-        tr
-        tr
-            tdCall of Duty Warzone 2.0td
-            td50 FPStd
-            td60 FPStd
-            td75 FPStd
-        tr
-        tr
-            tdCyberpunk 2077td
-            td40 FPStd
-            td55 FPStd
-            td70 FPStd
-        tr
-        tr
-            tdRed Dead Redemption 2td
-            td45 FPStd
-            td60 FPStd
-            td75 FPStd
-        tr
-        tr
-            tdGTA Vtd
-            td60 FPStd
-            td75 FPStd
-            td90 FPStd
-        tr
-        tr
-            tdAssassin's Creed Odysseytd
-            td45 FPStd
-            td55 FPStd
-            td70 FPStd
-        tr
-    table
-body
-html
+        .bar-comparison-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            height: 150px; /* Çubukların sabit yüksekliği */
+            background-color: #f3f4f6; /* Arka plan rengi */
+            border-radius: 8px;
+            overflow: hidden;
+            padding: 8px;
+            margin-bottom: 20px;
+        }
+        .single-bar-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            margin: 0 8px;
+        }
+        .bar-s1 {
+            width: 80%;
+            background: linear-gradient(to top, #6366f1, #818cf8); /* Sistem 1 için mavi gradyan */
+            border-radius: 6px;
+            transition: height 0.5s ease-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            min-height: 20px; /* Görünürlük için minimum yükseklik */
+        }
+        .bar-s2 {
+            width: 80%;
+            background: linear-gradient(to top, #10b981, #34d399); /* Sistem 2 için yeşil gradyan */
+            border-radius: 6px;
+            transition: height 0.5s ease-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            min-height: 20px; /* Görünürlük için minimum yükseklik */
+        }
+    </style>
+</head>
+<body class="p-6">
+    <div class="container">
+        <h1 class="text-4xl font-extrabold text-center text-gray-900 mb-8">Özel Sistem Karşılaştırma Aracı</h1>
+
+        <!-- Sistem Seçim Alanı -->
+        <div class="flex flex-col md:flex-row justify-center items-start gap-8 mb-8">
+            <!-- Sistem 1 Bileşen Seçimi -->
+            <div class="w-full md:w-1/2 bg-indigo-50 p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold text-indigo-700 mb-6 text-center">Sistem 1</h2>
+                <div class="mb-4">
+                    <label for="s1-cpu" class="block text-md font-medium text-gray-700 mb-1">İşlemci (CPU):</label>
+                    <select id="s1-cpu" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-md rounded-md shadow-sm"></select>
+                </div>
+                <div class="mb-4">
+                    <label for="s1-gpu" class="block text-md font-medium text-gray-700 mb-1">Ekran Kartı (GPU):</label>
+                    <select id="s1-gpu" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-md rounded-md shadow-sm"></select>
+                </div>
+                <div class="mb-4">
+                    <label for="s1-ram" class="block text-md font-medium text-gray-700 mb-1">Bellek (RAM):</label>
+                    <select id="s1-ram" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-md rounded-md shadow-sm"></select>
+                </div>
+                <div class="mb-4">
+                    <label for="s1-storage" class="block text-md font-medium text-gray-700 mb-1">Depolama:</label>
+                    <select id="s1-storage" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-md rounded-md shadow-sm"></select>
+                </div>
+                <div class="mb-4">
+                    <label for="s1-psu" class="block text-md font-medium text-gray-700 mb-1">Güç Kaynağı (PSU):</label>
+                    <select id="s1-psu" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-md rounded-md shadow-sm"></select>
+                </div>
+            </div>
+
+            <!-- Sistem 2 Bileşen Seçimi -->
+            <div class="w-full md:w-1/2 bg-emerald-50 p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold text-emerald-700 mb-6 text-center">Sistem 2</h2>
+                <div class="mb-4">
+                    <label for="s2-cpu" class="block text-md font-medium text-gray-700 mb-1">İşlemci (CPU):</label>
+                    <select id="s2-cpu" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-md rounded-md shadow-sm"></select>
+                </div>
+                <div class="mb-4">
+                    <label for="s2-gpu" class="block text-md font-medium text-gray-700 mb-1">Ekran Kartı (GPU):</label>
+                    <select id="s2-gpu" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-md rounded-md shadow-sm"></select>
+                </div>
+                <div class="mb-4">
+                    <label for="s2-ram" class="block text-md font-medium text-gray-700 mb-1">Bellek (RAM):</label>
+                    <select id="s2-ram" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-md rounded-md shadow-sm"></select>
+                </div>
+                <div class="mb-4">
+                    <label for="s2-storage" class="block text-md font-medium text-gray-700 mb-1">Depolama:</label>
+                    <select id="s2-storage" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-md rounded-md shadow-sm"></select>
+                </div>
+                <div class="mb-4">
+                    <label for="s2-psu" class="block text-md font-medium text-gray-700 mb-1">Güç Kaynağı (PSU):</label>
+                    <select id="s2-psu" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-md rounded-md shadow-sm"></select>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-center mb-10">
+            <button id="compareButton" class="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold rounded-lg shadow-lg hover:from-blue-700 hover:to-indigo-800 transition transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                Sistemleri Karşılaştır
+            </button>
+        </div>
+
+        <div id="errorMessage" class="hidden mt-8 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md text-center"></div>
+
+        <!-- Karşılaştırma Sonuçları Alanı -->
+        <div id="comparisonResults" class="hidden border-t-2 border-gray-200 pt-8 mt-8">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Sistem 1 <span class="text-indigo-500">vs</span> Sistem 2 Performans Karşılaştırması</h2>
+
+            <!-- Genel Bilgiler -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-8">
+                <div id="system1Info" class="bg-indigo-50 p-6 rounded-lg shadow-md flex flex-col justify-between"></div>
+                <div id="system2Info" class="bg-emerald-50 p-6 rounded-lg shadow-md flex flex-col justify-between"></div>
+            </div>
+
+            <!-- Bileşen Bazında Karşılaştırma Barları -->
+            <div class="mt-8">
+                <div id="cpuComparisonBar"></div>
+                <div id="gpuComparisonBar"></div>
+                <div id="ramComparisonBar"></div>
+                <div id="storageComparisonBar"></div>
+                <div id="psuComparisonBar"></div>
+            </div>
+
+            <!-- Darboğaz Sonuçları -->
+            <div id="bottleneckAnalysis" class="mt-10 p-6 bg-purple-50 border border-purple-200 rounded-lg text-purple-800"></div>
+
+            <div class="mt-10 p-6 bg-blue-50 border border-blue-200 rounded-lg text-blue-800">
+                <h3 class="text-xl font-semibold mb-3">Puanlama Hakkında Not:</h3>
+                <p class="mb-2">
+                    <span class="font-bold">CPU</span> ve <span class="font-bold">GPU</span> puanları, yaklaşık PassMark benchmark sonuçlarına dayanmaktadır. Bu puanlar, bileşenlerin teorik performansını gösterir ve gerçek dünya performansı farklılık gösterebilir.
+                </p>
+                <p class="mb-2">
+                    <span class="font-bold">RAM, Depolama</span> ve <span class="font-bold">PSU</span> için ise sistemler arasındaki
+                    <span class="font-bold">göreceli performansı ve güncelliği</span> yansıtan basit puanlar atanmıştır (daha yüksek puan daha iyi anlamına gelir). Bu puanlar doğrudan benchmark testlerinden alınmamıştır, genel bir referans olarak kullanılabilir.
+                </p>
+                <p class="mb-2">
+                    <span class="font-bold">Darboğaz yüzdesi</span>, İşlemci ve Ekran Kartı puanları arasındaki farka dayanarak hesaplanır. Daha yüksek bir yüzde, bileşenler arasında daha büyük bir performans dengesizliği olduğunu gösterir. Bu, sistemin genel performansının bir bileşen tarafından kısıtlandığı anlamına gelebilir.
+                </p>
+                <ul class="list-disc list-inside mt-3">
+                    <li>Örnek CPU Skorları (Yaklaşık PassMark CPU Mark):
+                        <ul class="list-disc list-inside ml-4">
+                            <li>Intel Core i7-4790: ~7266</li>
+                            <li>AMD Ryzen 5 2600X: ~13800</li>
+                            <li>Intel Core i9-14900K: ~62000</li>
+                        </ul>
+                    </li>
+                    <li>Örnek GPU Skorları (Yaklaşık PassMark G3D Mark):
+                        <ul class="list-disc list-inside ml-4">
+                            <li>NVIDIA GeForce GTX 960: ~8000</li>
+                            <li>AMD Radeon RX 570: ~12000</li>
+                            <li>NVIDIA GeForce RTX 4080: ~34440</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Bileşen Verileri (PassMark ve göreceli puanlar)
+        const cpuData = [
+            { id: 'i5-2400', name: 'Intel Core i5-2400', score: 3870, details: '4 Çekirdek, 4 İzlek' },
+            { id: 'i7-4790', name: 'Intel Core i7-4790', score: 7266, details: '4 Çekirdek, 8 İzlek' },
+            { id: 'r5-2600x', name: 'AMD Ryzen 5 2600X', score: 13800, details: '6 Çekirdek, 12 İzlek' },
+            { id: 'i5-10400f', name: 'Intel Core i5-10400F', score: 12127, details: '6 Çekirdek, 12 İzlek' },
+            { id: 'r5-3600', name: 'AMD Ryzen 5 3600', score: 17750, details: '6 Çekirdek, 12 İzlek' },
+            { id: 'i5-11600k', name: 'Intel Core i5-11600K', score: 21500, details: '6 Çekirdek, 12 İzlek' },
+            { id: 'r5-5600x', name: 'AMD Ryzen 5 5600X', score: 21873, details: '6 Çekirdek, 12 İzlek' },
+            { id: 'i7-12700k', name: 'Intel Core i7-12700K', score: 34967, details: '12 Çekirdek, 20 İzlek' },
+            { id: 'r7-7800x3d', name: 'AMD Ryzen 7 7800X3D', score: 48674, details: '8 Çekirdek, 16 İzlek' },
+            { id: 'i9-14900k', name: 'Intel Core i9-14900K', score: 62000, details: '24 Çekirdek, 32 İzlek' },
+            { id: 'r9-7950x3d', name: 'AMD Ryzen 9 7950X3D', score: 63500, details: '16 Çekirdek, 32 İzlek' },
+        ];
+
+        const gpuData = [
+            { id: 'gtx-950', name: 'NVIDIA GeForce GTX 950', score: 5346, details: '2GB GDDR5' },
+            { id: 'gtx-960', name: 'NVIDIA GeForce GTX 960', score: 8000, details: '2GB GDDR5' },
+            { id: 'rx-570', name: 'AMD Radeon RX 570', score: 12000, details: '8GB GDDR5' },
+            { id: 'gtx-1660s', name: 'NVIDIA GeForce GTX 1660 SUPER', score: 12500, details: '6GB GDDR6' },
+            { id: 'rtx-2060', name: 'NVIDIA GeForce RTX 2060', score: 14125, details: '6GB GDDR6' },
+            { id: 'rx-6600xt', name: 'AMD Radeon RX 6600 XT', score: 18000, details: '8GB GDDR6' },
+            { id: 'rtx-3060', name: 'NVIDIA GeForce RTX 3060', score: 19500, details: '12GB GDDR6' },
+            { id: 'rx-6700xt', name: 'AMD Radeon RX 6700 XT', score: 22000, details: '12GB GDDR6' },
+            { id: 'rtx-3070', name: 'NVIDIA GeForce RTX 3070', score: 22291, details: '8GB GDDR6' },
+            { id: 'rtx-3080', name: 'NVIDIA GeForce RTX 3080', score: 25180, details: '10GB GDDR6X' },
+            { id: 'rx-6800xt', name: 'AMD Radeon RX 6800 XT', score: 29000, details: '16GB GDDR6' },
+            { id: 'rtx-4070', name: 'NVIDIA GeForce RTX 4070', score: 30000, details: '12GB GDDR6X' },
+            { id: 'rtx-4080', name: 'NVIDIA GeForce RTX 4080', score: 34440, details: '16GB GDDR6X' },
+            { id: 'rtx-4090', name: 'NVIDIA GeForce RTX 4090', score: 42000, details: '24GB GDDR6X' },
+        ];
+
+        const ramData = [
+            { id: '8gb-ddr3-1333', name: '8GB DDR3 1333MHz', score: 25 },
+            { id: '16gb-ddr3-1600', name: '16GB DDR3 1600MHz', score: 40 },
+            { id: '8gb-ddr4-2666', name: '8GB DDR4 2666MHz', score: 50 },
+            { id: '16gb-ddr4-3200', name: '16GB DDR4 3200MHz', score: 70 },
+            { id: '32gb-ddr4-3200', name: '32GB DDR4 3200MHz', score: 90 },
+            { id: '32gb-ddr5-6000', name: '32GB DDR5 6000MHz', score: 100 },
+            { id: '64gb-ddr5-6000', name: '64GB DDR5 6000MHz', score: 110 },
+        ];
+
+        const storageData = [
+            { id: '500gb-hdd', name: '500GB HDD', score: 10 },
+            { id: '128gb-ssd-500gb-hdd', name: '128GB SSD + 500GB HDD', score: 50 },
+            { id: '256gb-ssd', name: '256GB SSD', score: 60 },
+            { id: '500gb-ssd', name: '500GB SSD', score: 85 },
+            { id: '1tb-nvme', name: '1TB NVMe SSD', score: 100 },
+            { id: '2tb-nvme', name: '2TB NVMe SSD', score: 110 },
+            { id: '4tb-nvme', name: '4TB NVMe SSD', score: 120 },
+        ];
+
+        const psuData = [
+            { id: '400w', name: '400W', score: 45 },
+            { id: '550w', name: '550W', score: 60 },
+            { id: '650w', name: '650W', score: 70 },
+            { id: '750w', name: '750W', score: 80 },
+            { id: '850w', name: '850W', score: 90 },
+            { id: '1000w', name: '1000W', score: 100 },
+            { id: '1200w', name: '1200W', score: 110 },
+        ];
+
+        // Maksimum puanları dinamik olarak hesaplar (çubuk yüksekliklerini oranlamak için)
+        const calculateMaxScores = () => {
+            return {
+                cpu: Math.max(...cpuData.map(c => c.score)),
+                gpu: Math.max(...gpuData.map(g => g.score)),
+                ram: Math.max(...ramData.map(r => r.score)),
+                storage: Math.max(...storageData.map(s => s.score)),
+                psu: Math.max(...psuData.map(p => p.score)),
+            };
+        };
+        const maxScores = calculateMaxScores();
+
+        // Dropdown'ları doldurma fonksiyonu
+        function populateDropdown(selectElementId, data) {
+            const select = document.getElementById(selectElementId);
+            select.innerHTML = '<option value="">-- Seçin --</option>'; // Varsayılan seçenek
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = `${item.name} ${item.details ? `(${item.details})` : ''}`;
+                select.appendChild(option);
+            });
+        }
+
+        // Darboğaz hesaplama fonksiyonu
+        const calculateBottleneck = (cpuScore, gpuScore) => {
+            if (!cpuScore || !gpuScore) {
+                return { percentage: null, explanation: "Hesaplamak için hem CPU hem de GPU seçilmelidir." };
+            }
+
+            const diff = Math.abs(cpuScore - gpuScore);
+            const maxVal = Math.max(cpuScore, gpuScore);
+
+            if (maxVal === 0) {
+                return { percentage: 0, explanation: "Puanlar sıfır olduğu için darboğaz hesaplanamadı." };
+            }
+
+            const percentage = (diff / maxVal) * 100;
+            let explanation = "";
+            let bottleneckComponent = "";
+
+            if (cpuScore < gpuScore) {
+                bottleneckComponent = "İşlemci (CPU)";
+            } else if (gpuScore < cpuScore) {
+                bottleneckComponent = "Ekran Kartı (GPU)";
+            } else {
+                bottleneckComponent = "Dengeli";
+            }
+
+            if (percentage < 5) {
+                explanation = "Çok az veya hiç darboğaz yok. Sistem oldukça dengeli.";
+            } else if (percentage < 15) {
+                explanation = "Minimal darboğaz. Çoğu senaryoda fark edilmez ancak küçük bir bileşen dengesizliği var.";
+            } else if (percentage < 25) {
+                explanation = "Orta seviye darboğaz. Bazı oyunlarda veya uygulamalarda hissedilebilir bir performans düşüşü yaşanabilir.";
+            } else {
+                explanation = "Yüksek darboğaz. Seçilen " + bottleneckComponent + " diğer bileşeni önemli ölçüde kısıtlayabilir, performans büyük ölçüde etkilenebilir.";
+            }
+
+            return {
+                percentage: percentage.toFixed(1),
+                explanation: `${bottleneckComponent} odaklı darboğaz: ${explanation}`,
+            };
+        };
+
+        // Karşılaştırma çubuğu oluşturma/güncelleme fonksiyonu
+        function createComparisonBar(parentElementId, label, score1, score2, maxScore) {
+            const parentElement = document.getElementById(parentElementId);
+            parentElement.innerHTML = `
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">${label}</h3>
+                <div class="bar-comparison-container">
+                    <div class="single-bar-container">
+                        <div class="bar-s1" style="height: ${Math.min((score1 / maxScore) * 100, 100)}%;">
+                            ${score1}
+                        </div>
+                    </div>
+                    <div class="single-bar-container">
+                        <div class="bar-s2" style="height: ${Math.min((score2 / maxScore) * 100, 100)}%;">
+                            ${score2}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Sayfa yüklendiğinde dropdown'ları doldur
+        document.addEventListener('DOMContentLoaded', () => {
+            populateDropdown('s1-cpu', cpuData);
+            populateDropdown('s1-gpu', gpuData);
+            populateDropdown('s1-ram', ramData);
+            populateDropdown('s1-storage', storageData);
+            populateDropdown('s1-psu', psuData);
+
+            populateDropdown('s2-cpu', cpuData);
+            populateDropdown('s2-gpu', gpuData);
+            populateDropdown('s2-ram', ramData);
+            populateDropdown('s2-storage', storageData);
+            populateDropdown('s2-psu', psuData);
+
+            // Tüm seçim kutularına değişiklik olay dinleyicisi ekle
+            const selects = document.querySelectorAll('select');
+            selects.forEach(select => {
+                select.addEventListener('change', () => {
+                    document.getElementById('comparisonResults').classList.add('hidden');
+                    document.getElementById('errorMessage').classList.add('hidden');
+                });
+            });
+        });
+
+        // Karşılaştır düğmesine tıklama olay dinleyicisi
+        document.getElementById('compareButton').addEventListener('click', () => {
+            const s1CpuId = document.getElementById('s1-cpu').value;
+            const s1GpuId = document.getElementById('s1-gpu').value;
+            const s1RamId = document.getElementById('s1-ram').value;
+            const s1StorageId = document.getElementById('s1-storage').value;
+            const s1PsuId = document.getElementById('s1-psu').value;
+
+            const s2CpuId = document.getElementById('s2-cpu').value;
+            const s2GpuId = document.getElementById('s2-gpu').value;
+            const s2RamId = document.getElementById('s2-ram').value;
+            const s2StorageId = document.getElementById('s2-storage').value;
+            const s2PsuId = document.getElementById('s2-psu').value;
+
+            const s1Cpu = cpuData.find(c => c.id === s1CpuId);
+            const s1Gpu = gpuData.find(g => g.id === s1GpuId);
+            const s1Ram = ramData.find(r => r.id === s1RamId);
+            const s1Storage = storageData.find(s => s.id === s1StorageId);
+            const s1Psu = psuData.find(p => p.id === s1PsuId);
+
+            const s2Cpu = cpuData.find(c => c.id === s2CpuId);
+            const s2Gpu = gpuData.find(g => g.id === s2GpuId);
+            const s2Ram = ramData.find(r => r.id === s2RamId);
+            const s2Storage = storageData.find(s => s.id === s2StorageId);
+            const s2Psu = psuData.find(p => p.id === s2PsuId);
+
+            const errorMessageElement = document.getElementById('errorMessage');
+            const comparisonResultsElement = document.getElementById('comparisonResults');
+
+            // Hata kontrolü
+            if (!s1Cpu || !s1Gpu || !s2Cpu || !s2Gpu) {
+                errorMessageElement.textContent = "Lütfen her iki sistem için de İşlemci ve Ekran Kartı seçimi yapın.";
+                errorMessageElement.classList.remove('hidden');
+                comparisonResultsElement.classList.add('hidden');
+                return;
+            } else {
+                errorMessageElement.classList.add('hidden');
+            }
+
+            // Genel Bilgileri Güncelle
+            document.getElementById('system1Info').innerHTML = `
+                <h3 class="text-xl font-bold text-indigo-700 mb-4">Sistem 1 Bilgileri</h3>
+                <p class="text-gray-700"><span class="font-semibold">İşlemci:</span> ${s1Cpu.name} ${s1Cpu.details ? `(${s1Cpu.details})` : ''}</p>
+                <p class="text-gray-700"><span class="font-semibold">Ekran Kartı:</span> ${s1Gpu.name} ${s1Gpu.details ? `(${s1Gpu.details})` : ''}</p>
+                <p class="text-gray-700"><span class="font-semibold">RAM:</span> ${s1Ram ? s1Ram.name : 'Seçilmedi'}</p>
+                <p class="text-gray-700"><span class="font-semibold">Depolama:</span> ${s1Storage ? s1Storage.name : 'Seçilmedi'}</p>
+                <p class="text-gray-700"><span class="font-semibold">PSU:</span> ${s1Psu ? s1Psu.name : 'Seçilmedi'}</p>
+            `;
+            document.getElementById('system2Info').innerHTML = `
+                <h3 class="text-xl font-bold text-emerald-700 mb-4">Sistem 2 Bilgileri</h3>
+                <p class="text-gray-700"><span class="font-semibold">İşlemci:</span> ${s2Cpu.name} ${s2Cpu.details ? `(${s2Cpu.details})` : ''}</p>
+                <p class="text-gray-700"><span class="font-semibold">Ekran Kartı:</span> ${s2Gpu.name} ${s2Gpu.details ? `(${s2Gpu.details})` : ''}</p>
+                <p class="text-gray-700"><span class="font-semibold">RAM:</span> ${s2Ram ? s2Ram.name : 'Seçilmedi'}</p>
+                <p class="text-gray-700"><span class="font-semibold">Depolama:</span> ${s2Storage ? s2Storage.name : 'Seçilmedi'}</p>
+                <p class="text-gray-700"><span class="font-semibold">PSU:</span> ${s2Psu ? s2Psu.name : 'Seçilmedi'}</p>
+            `;
+
+            // Karşılaştırma Çubuklarını Güncelle
+            createComparisonBar('cpuComparisonBar', 'İşlemci (CPU) Performansı', s1Cpu.score, s2Cpu.score, maxScores.cpu);
+            createComparisonBar('gpuComparisonBar', 'Ekran Kartı (GPU) Performansı', s1Gpu.score, s2Gpu.score, maxScores.gpu);
+            createComparisonBar('ramComparisonBar', 'Bellek (RAM) Performansı', s1Ram ? s1Ram.score : 0, s2Ram ? s2Ram.score : 0, maxScores.ram);
+            createComparisonBar('storageComparisonBar', 'Depolama Performansı', s1Storage ? s1Storage.score : 0, s2Storage ? s2Storage.score : 0, maxScores.storage);
+            createComparisonBar('psuComparisonBar', 'Güç Kaynağı (PSU) Yeterliliği', s1Psu ? s1Psu.score : 0, s2Psu ? s2Psu.score : 0, maxScores.psu);
+
+            // Darboğaz Analizini Güncelle
+            const s1Bottleneck = calculateBottleneck(s1Cpu.score, s1Gpu.score);
+            const s2Bottleneck = calculateBottleneck(s2Cpu.score, s2Gpu.score);
+            document.getElementById('bottleneckAnalysis').innerHTML = `
+                <h3 class="text-xl font-semibold mb-3">Darboğaz Analizi:</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="font-bold text-lg mb-1">Sistem 1 Darboğaz:</p>
+                        <p class="text-2xl font-bold text-purple-700">${s1Bottleneck.percentage}%</p>
+                        <p class="text-md">${s1Bottleneck.explanation}</p>
+                    </div>
+                    <div>
+                        <p class="font-bold text-lg mb-1">Sistem 2 Darboğaz:</p>
+                        <p class="text-2xl font-bold text-purple-700">${s2Bottleneck.percentage}%</p>
+                        <p class="text-md">${s2Bottleneck.explanation}</p>
+                    </div>
+                </div>
+            `;
+
+            comparisonResultsElement.classList.remove('hidden');
+        });
+    </script>
+</body>
+</html>
