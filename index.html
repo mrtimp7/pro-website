@@ -3,460 +3,1301 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RTX Ekran Kartları Listesi</title>
-    <!-- Tailwind CSS CDN -->
+    <title id="appTitle">Özel Sistem Karşılaştırma Aracı</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts - Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Custom CSS for animations and font */
+        :root {
+            --bg-color: #f0f2f5;
+            --text-color: #333;
+            --card-bg-color: #fff;
+            --system-panel-bg-odd: #e0e7ff; /* Blue-50 */
+            --system-panel-text-odd: #4338ca; /* Indigo-700 */
+            --system-panel-bg-even: #d1fae5; /* Emerald-50 */
+            --system-panel-text-even: #065f46; /* Emerald-700 */
+            --accent-color-odd: #6366f1; /* Indigo-500 */
+            --accent-color-even: #10b981; /* Emerald-500 */
+            --error-bg: #fee2e2;
+            --error-text: #b91c1c;
+            --info-bg: #dbeafe;
+            --info-text: #1e40af;
+            --purple-bg: #ede9fe;
+            --purple-text: #6b21a8;
+        }
+
+        body.dark-mode {
+            --bg-color: #1a202c; /* Gray-900 */
+            --text-color: #e2e8f0; /* Gray-200 */
+            --card-bg-color: #2d3748; /* Gray-800 */
+            --system-panel-bg-odd: #4a5568; /* Gray-700 */
+            --system-panel-text-odd: #9f7aea; /* Purple-400 */
+            --system-panel-bg-even: #48bb78; /* Green-500 */
+            --system-panel-text-even: #fff;
+            --accent-color-odd: #a78bfa; /* Violet-400 */
+            --accent-color-even: #38b2ac; /* Teal-500 */
+            --error-bg: #7f1d1d; /* Red-900 */
+            --error-text: #fca5a5; /* Red-300 */
+            --info-bg: #1e3a8a; /* Blue-900 */
+            --info-text: #bfdbfe; /* Blue-200 */
+            --purple-bg: #5b21b6; /* Violet-700 */
+            --purple-text: #ddd6fe; /* Violet-200 */
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #f0f2f5 0%, #e0e6ec 100%); /* Subtle gradient background */
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            color: #333;
-            overflow-x: hidden; /* Prevent horizontal scroll on some animations */
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         .container {
-            max-width: 1400px; /* Wider container */
-            width: 100%;
+            background-color: var(--card-bg-color);
+            transition: background-color 0.3s ease;
+        }
+        .system-panel {
+            background-color: var(--system-panel-bg-odd); /* Default for odd systems */
+            transition: background-color 0.3s ease;
+        }
+        .system-panel.even-system {
+            background-color: var(--system-panel-bg-even); /* For even systems */
+            transition: background-color 0.3s ease;
+        }
+        .system-panel h2 {
+            color: var(--system-panel-text-odd);
+            transition: color 0.3s ease;
+        }
+        .system-panel.even-system h2 {
+            color: var(--system-panel-text-even);
+            transition: color 0.3s ease;
         }
 
-        .header-title {
-            animation: pulse-grow 2s infinite ease-in-out;
-            color: #1a202c; /* Deeper gray for title */
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.05);
+        .error-message {
+            background-color: var(--error-bg);
+            color: var(--error-text);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .info-message {
+            background-color: var(--info-bg);
+            color: var(--info-text);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .bottleneck-analysis {
+            background-color: var(--purple-bg);
+            color: var(--purple-text);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .comparison-results-section {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes pulse-grow {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
+        /* Styles for all vertical bar charts (Total and Components) */
+        .bar-chart-section {
+            background-color: var(--card-bg-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            text-align: center;
         }
 
-        .card {
-            opacity: 0;
-            transform: translateY(30px) scale(0.95); /* Slightly more pronounced initial state */
-            transition: opacity 0.7s ease-out, transform 0.7s ease-out, box-shadow 0.3s ease-in-out, border 0.3s ease-in-out;
-            cursor: pointer;
-            border: 2px solid transparent; /* Border for hover effect */
-        }
-        .card.fade-in {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-        .card:hover {
-            transform: translateY(-8px) scale(1.03); /* More lift on hover */
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); /* Stronger shadow */
-            border-color: #4F46E5; /* Highlight border on hover */
-        }
-        .card img {
-            transition: transform 0.3s ease-in-out;
-        }
-        .card:hover img {
-            transform: scale(1.05); /* Image zoom on hover */
-        }
-
-        /* Modal specific styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8); /* Darker overlay */
-            backdrop-filter: blur(5px); /* Blurred background */
+        .bar-chart-container {
             display: flex;
             justify-content: center;
+            align-items: flex-end;
+            height: 200px; /* Adjust height as needed */
+            width: 100%;
+            overflow-x: auto; /* Enable horizontal scrolling for many bars */
+            padding-bottom: 10px; /* Space for scrollbar */
+        }
+        .bar-item {
+            flex-shrink: 0; /* Prevent items from shrinking */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
             align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.4s ease-out, visibility 0.4s ease-out;
-        }
-        .modal-overlay.open {
-            opacity: 1;
-            visibility: visible;
-        }
-        .modal-content {
-            background: linear-gradient(180deg, #ffffff 0%, #f9f9fb 100%); /* Subtle gradient for modal */
-            border-radius: 1.5rem; /* More rounded */
-            padding: 2.5rem; /* Increased padding */
-            max-width: 90%;
-            width: 700px; /* Slightly wider modal */
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-            transform: translateY(-50px) scale(0.8); /* Stronger initial modal animation */
-            opacity: 0;
-            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.4s ease-out; /* Bounce effect */
+            margin: 0 4px; /* Reduced margin for component bars */
             position: relative;
-            border: 1px solid rgba(0,0,0,0.1);
+            width: 100px; /* Fixed width for individual bars */
         }
-        .modal-overlay.open .modal-content {
-            transform: translateY(0) scale(1);
-            opacity: 1;
-        }
-        .close-button {
-            position: absolute;
-            top: 1.25rem;
-            right: 1.25rem;
-            background: #ef4444; /* Red close button */
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            font-size: 1.2rem;
+        .bar {
+            width: 80%;
+            border-radius: 8px 8px 0 0;
+            transition: height 0.8s ease-out, background 0.3s ease;
             display: flex;
-            justify-content: center;
             align-items: center;
-            cursor: pointer;
-            transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem; /* Adjusted font size for component bars */
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            min-height: 25px; /* Minimum height for visibility */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .close-button:hover {
-            background-color: #dc2626;
-            transform: rotate(90deg); /* Rotate on hover */
+        .bar-color-odd {
+            background: linear-gradient(to top, var(--accent-color-odd), #4f46e5); /* Indigo gradient */
+        }
+        .bar-color-even {
+            background: linear-gradient(to top, var(--accent-color-even), #059669); /* Emerald gradient */
+        }
+        .bar-label {
+            margin-top: 8px;
+            font-size: 0.7rem; /* Adjusted font size for bar labels */
+            font-weight: 600;
+            color: var(--text-color);
+            text-align: center;
+            word-break: break-word; /* Ensure long names wrap */
+        }
+        .system-input-group {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            min-width: 320px; /* Her bir panel için minimum genişlik */
+            flex-shrink: 0; /* Küçülmesini engelle */
+            flex-grow: 1; /* Esnek büyüme */
         }
 
-        .feature-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.75rem;
-            background-color: #f7f7f7;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
-            transition: background-color 0.2s ease-in-out;
-        }
-        .feature-item:hover {
-            background-color: #f0f0f0;
-        }
-        .feature-icon {
-            margin-right: 0.75rem;
-            color: #4F46E5; /* Primary color */
-            font-size: 1.2rem;
+        /* Responsive grid for system inputs */
+        @media (min-width: 768px) { /* md breakpoint */
+            #systemInputsContainer {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* Minimum 320px genişliğinde sütunlar */
+                gap: 2rem; /* Daha büyük boşluk */
+                overflow-x: visible; /* Kaydırmayı kapat */
+            }
+            .system-input-group {
+                margin-bottom: 0; /* Grid kullanıldığında alt boşluğa gerek yok */
+            }
         }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="p-6">
+    <div class="container">
+        <div class="flex justify-between items-center mb-4">
+            <select id="languageToggle" class="px-3 py-2 rounded-md bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100 shadow-md transition-colors duration-300">
+                <option value="tr">Türkçe</option>
+                <option value="en">English</option>
+            </select>
+            <button id="themeToggle" class="px-4 py-2 rounded-full bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100 shadow-md transition-colors duration-300">
+                Tema Değiştir
+            </button>
+        </div>
+        <h1 class="text-4xl font-extrabold text-center text-gray-900 mb-8" data-key="appTitle">Özel Sistem Karşılaştırma Aracı</h1>
 
-    <div class="container text-center mb-12 mt-8">
-        <h1 class="text-5xl sm:text-6xl font-extrabold header-title mb-4">RTX Ekran Kartları</h1>
-        <p class="text-xl text-gray-700 max-w-2xl mx-auto">NVIDIA'nın en yeni ve güçlü RTX serisi ekran kartlarının detaylı özelliklerine göz atın.</p>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 w-full px-4 sm:px-0">
-        <!-- RTX 2000 Series Cards -->
-        <div class="card bg-white rounded-2xl shadow-xl p-6 transform transition-all duration-300 ease-in-out"
-            data-model="NVIDIA GeForce RTX 2060"
-            data-vram="6GB GDDR6"
-            data-bus="PCIe 3.0 x16"
-            data-cuda="1920"
-            data-boost-clock="1.68 GHz"
-            data-memory-speed="14 Gbps"
-            data-tdp="160W">
-            <img src="https://placehold.co/300x200/3B82F6/FFFFFF?text=RTX+2060" alt="RTX 2060 Görseli" class="w-full h-40 object-cover rounded-xl mb-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/300x200/9CA3AF/FFFFFF?text=Görsel+Yok';">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">NVIDIA GeForce RTX 2060</h2>
-            <ul class="text-gray-700 text-sm space-y-1">
-                <li><strong class="font-semibold">VRAM:</strong> 6GB GDDR6</li>
-                <li><strong class="font-semibold">Veri Yolu Arayüzü:</strong> PCIe 3.0 x16</li>
-                <li><strong class="font-semibold">CUDA Çekirdekleri:</strong> 1920</li>
-            </ul>
+        <!-- Sistem Giriş Alanları Dinamik Olarak Eklenecek Buraya -->
+        <!-- Yatay düzen ve responsive grid için düzenlendi -->
+        <div id="systemInputsContainer" class="flex flex-nowrap overflow-x-auto gap-8 mb-8 py-2 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <!-- Sistem Panelleri JavaScript ile eklenecek -->
         </div>
 
-        <div class="card bg-white rounded-2xl shadow-xl p-6 transform transition-all duration-300 ease-in-out"
-            data-model="NVIDIA GeForce RTX 2070 SUPER"
-            data-vram="8GB GDDR6"
-            data-bus="PCIe 3.0 x16"
-            data-cuda="2560"
-            data-boost-clock="1.77 GHz"
-            data-memory-speed="14 Gbps"
-            data-tdp="215W">
-            <img src="https://placehold.co/300x200/3B82F6/FFFFFF?text=RTX+2070+SUPER" alt="RTX 2070 SUPER Görseli" class="w-full h-40 object-cover rounded-xl mb-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/300x200/9CA3AF/FFFFFF?text=Görsel+Yok';">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">NVIDIA GeForce RTX 2070 SUPER</h2>
-            <ul class="text-gray-700 text-sm space-y-1">
-                <li><strong class="font-semibold">VRAM:</strong> 8GB GDDR6</li>
-                <li><strong class="font-semibold">Veri Yolu Arayüzü:</strong> PCIe 3.0 x16</li>
-                <li><strong class="font-semibold">CUDA Çekirdekleri:</strong> 2560</li>
-            </ul>
+        <div class="flex flex-col sm:flex-row justify-center mb-8 gap-4">
+            <button id="compareAllSystemsButton" class="px-6 py-3 bg-green-500 text-white font-bold rounded-lg shadow-md hover:bg-green-600 transition transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-green-300" data-key="compareAllSystemsButton">
+                Tüm Sistemleri Karşılaştır
+            </button>
         </div>
 
-        <div class="card bg-white rounded-2xl shadow-xl p-6 transform transition-all duration-300 ease-in-out"
-            data-model="NVIDIA GeForce RTX 2080 Ti"
-            data-vram="11GB GDDR6"
-            data-bus="PCIe 3.0 x16"
-            data-cuda="4352"
-            data-boost-clock="1.55 GHz"
-            data-memory-speed="14 Gbps"
-            data-tdp="260W">
-            <img src="https://placehold.co/300x200/3B82F6/FFFFFF?text=RTX+2080+Ti" alt="RTX 2080 Ti Görseli" class="w-full h-40 object-cover rounded-xl mb-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/300x200/9CA3AF/FFFFFF?text=Görsel+Yok';">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">NVIDIA GeForce RTX 2080 Ti</h2>
-            <ul class="text-gray-700 text-sm space-y-1">
-                <li><strong class="font-semibold">VRAM:</strong> 11GB GDDR6</li>
-                <li><strong class="font-semibold">Veri Yolu Arayüzü:</strong> PCIe 3.0 x16</li>
-                <li><strong class="font-semibold">CUDA Çekirdekleri:</strong> 4352</li>
-            </ul>
-        </div>
-
-        <!-- RTX 3000 Series Cards -->
-        <div class="card bg-white rounded-2xl shadow-xl p-6 transform transition-all duration-300 ease-in-out"
-            data-model="NVIDIA GeForce RTX 3050"
-            data-vram="8GB GDDR6"
-            data-bus="PCIe 4.0 x8"
-            data-cuda="2560"
-            data-boost-clock="1.78 GHz"
-            data-memory-speed="14 Gbps"
-            data-tdp="130W">
-            <img src="https://placehold.co/300x200/4F46E5/FFFFFF?text=RTX+3050" alt="RTX 3050 Görseli" class="w-full h-40 object-cover rounded-xl mb-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/300x200/9CA3AF/FFFFFF?text=Görsel+Yok';">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">NVIDIA GeForce RTX 3050</h2>
-            <ul class="text-gray-700 text-sm space-y-1">
-                <li><strong class="font-semibold">VRAM:</strong> 8GB GDDR6</li>
-                <li><strong class="font-semibold">Veri Yolu Arayüzü:</strong> PCIe 4.0 x8</li>
-                <li><strong class="font-semibold">CUDA Çekirdekleri:</strong> 2560</li>
-            </ul>
-        </div>
-
-        <div class="card bg-white rounded-2xl shadow-xl p-6 transform transition-all duration-300 ease-in-out"
-            data-model="NVIDIA GeForce RTX 3060"
-            data-vram="12GB GDDR6"
-            data-bus="PCIe 4.0 x16"
-            data-cuda="3584"
-            data-boost-clock="1.78 GHz"
-            data-memory-speed="15 Gbps"
-            data-tdp="170W">
-            <img src="https://placehold.co/300x200/4F46E5/FFFFFF?text=RTX+3060" alt="RTX 3060 Görseli" class="w-full h-40 object-cover rounded-xl mb-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/300x200/9CA3AF/FFFFFF?text=Görsel+Yok';">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">NVIDIA GeForce RTX 3060</h2>
-            <ul class="text-gray-700 text-sm space-y-1">
-                <li><strong class="font-semibold">VRAM:</strong> 12GB GDDR6</li>
-                <li><strong class="font-semibold">Veri Yolu Arayüzü:</strong> PCIe 4.0 x16</li>
-                <li><strong class="font-semibold">CUDA Çekirdekleri:</strong> 3584</li>
-            </ul>
-        </div>
-
-        <div class="card bg-white rounded-2xl shadow-xl p-6 transform transition-all duration-300 ease-in-out"
-            data-model="NVIDIA GeForce RTX 3070"
-            data-vram="8GB GDDR6"
-            data-bus="PCIe 4.0 x16"
-            data-cuda="5888"
-            data-boost-clock="1.73 GHz"
-            data-memory-speed="14 Gbps"
-            data-tdp="220W">
-            <img src="https://placehold.co/300x200/4F46E5/FFFFFF?text=RTX+3070" alt="RTX 3070 Görseli" class="w-full h-40 object-cover rounded-xl mb-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/300x200/9CA3AF/FFFFFF?text=Görsel+Yok';">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">NVIDIA GeForce RTX 3070</h2>
-            <ul class="text-gray-700 text-sm space-y-1">
-                <li><strong class="font-semibold">VRAM:</strong> 8GB GDDR6</li>
-                <li><strong class="font-semibold">Veri Yolu Arayüzü:</strong> PCIe 4.0 x16</li>
-                <li><strong class="font-semibold">CUDA Çekirdekleri:</strong> 5888</li>
-            </ul>
-        </div>
-
-        <div class="card bg-white rounded-2xl shadow-xl p-6 transform transition-all duration-300 ease-in-out"
-            data-model="NVIDIA GeForce RTX 3080"
-            data-vram="10GB/12GB GDDR6X"
-            data-bus="PCIe 4.0 x16"
-            data-cuda="8704/8960"
-            data-boost-clock="1.71 GHz"
-            data-memory-speed="19 Gbps"
-            data-tdp="320W">
-            <img src="https://placehold.co/300x200/4F46E5/FFFFFF?text=RTX+3080" alt="RTX 3080 Görseli" class="w-full h-40 object-cover rounded-xl mb-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/300x200/9CA3AF/FFFFFF?text=Görsel+Yok';">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">NVIDIA GeForce RTX 3080</h2>
-            <ul class="text-gray-700 text-sm space-y-1">
-                <li><strong class="font-semibold">VRAM:</strong> 10GB/12GB GDDR6X</li>
-                <li><strong class="font-semibold">Veri Yolu Arayüzü:</strong> PCIe 4.0 x16</li>
-                <li><strong class="font-semibold">CUDA Çekirdekleri:</strong> 8704/8960</li>
-            </ul>
-        </div>
-
-        <div class="card bg-white rounded-2xl shadow-xl p-6 transform transition-all duration-300 ease-in-out"
-            data-model="NVIDIA GeForce RTX 3090"
-            data-vram="24GB GDDR6X"
-            data-bus="PCIe 4.0 x16"
-            data-cuda="10496"
-            data-boost-clock="1.70 GHz"
-            data-memory-speed="19.5 Gbps"
-            data-tdp="350W">
-            <img src="https://placehold.co/300x200/4F46E5/FFFFFF?text=RTX+3090" alt="RTX 3090 Görseli" class="w-full h-40 object-cover rounded-xl mb-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/300x200/9CA3AF/FFFFFF?text=Görsel+Yok';">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">NVIDIA GeForce RTX 3090</h2>
-            <ul class="text-gray-700 text-sm space-y-1">
-                <li><strong class="font-semibold">VRAM:</strong> 24GB GDDR6X</li>
-                <li><strong class="font-semibold">Veri Yolu Arayüzü:</strong> PCIe 4.0 x16</li>
-                <li><strong class="font-semibold">CUDA Çekirdekleri:</strong> 10496</li>
-            </ul>
-        </div>
-
-        <!-- RTX 4000 Series Cards -->
-        <div class="card bg-white rounded-2xl shadow-xl p-6 transform transition-all duration-300 ease-in-out"
-            data-model="NVIDIA GeForce RTX 4060"
-            data-vram="8GB GDDR6"
-            data-bus="PCIe 4.0 x8"
-            data-cuda="3072"
-            data-boost-clock="2.46 GHz"
-            data-memory-speed="17 Gbps"
-            data-tdp="115W">
-            <img src="https://placehold.co/300x200/4F46E5/FFFFFF?text=RTX+4060" alt="RTX 4060 Görseli" class="w-full h-40 object-cover rounded-xl mb-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/300x200/9CA3AF/FFFFFF?text=Görsel+Yok';">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">NVIDIA GeForce RTX 4060</h2>
-            <ul class="text-gray-700 text-sm space-y-1">
-                <li><strong class="font-semibold">VRAM:</strong> 8GB GDDR6</li>
-                <li><strong class="font-semibold">Veri Yolu Arayüzü:</strong> PCIe 4.0 x8</li>
-                <li><strong class="font-semibold">CUDA Çekirdekleri:</strong> 3072</li>
-            </ul>
-        </div>
-
-        <div class="card bg-white rounded-2xl shadow-xl p-6 transform transition-all duration-300 ease-in-out"
-            data-model="NVIDIA GeForce RTX 4070"
-            data-vram="12GB GDDR6X"
-            data-bus="PCIe 4.0 x16"
-            data-cuda="5888"
-            data-boost-clock="2.48 GHz"
-            data-memory-speed="21 Gbps"
-            data-tdp="200W">
-            <img src="https://placehold.co/300x200/4F46E5/FFFFFF?text=RTX+4070" alt="RTX 4070 Görseli" class="w-full h-40 object-cover rounded-xl mb-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/300x200/9CA3AF/FFFFFF?text=Görsel+Yok';">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">NVIDIA GeForce RTX 4070</h2>
-            <ul class="text-gray-700 text-sm space-y-1">
-                <li><strong class="font-semibold">VRAM:</strong> 12GB GDDR6X</li>
-                <li><strong class="font-semibold">Veri Yolu Arayüzü:</strong> PCIe 4.0 x16</li>
-                <li><strong class="font-semibold">CUDA Çekirdekleri:</strong> 5888</li>
-            </ul>
-        </div>
-
-        <div class="card bg-white rounded-2xl shadow-xl p-6 transform transition-all duration-300 ease-in-out"
-            data-model="NVIDIA GeForce RTX 4080"
-            data-vram="16GB GDDR6X"
-            data-bus="PCIe 4.0 x16"
-            data-cuda="9728"
-            data-boost-clock="2.51 GHz"
-            data-memory-speed="22.4 Gbps"
-            data-tdp="320W">
-            <img src="https://placehold.co/300x200/4F46E5/FFFFFF?text=RTX+4080" alt="RTX 4080 Görseli" class="w-full h-40 object-cover rounded-xl mb-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/300x200/9CA3AF/FFFFFF?text=Görsel+Yok';">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">NVIDIA GeForce RTX 4080</h2>
-            <ul class="text-gray-700 text-sm space-y-1">
-                <li><strong class="font-semibold">VRAM:</strong> 16GB GDDR6X</li>
-                <li><strong class="font-semibold">Veri Yolu Arayüzü:</strong> PCIe 4.0 x16</li>
-                <li><strong class="font-semibold">CUDA Çekirdekleri:</strong> 9728</li>
-            </ul>
-        </div>
-
-        <div class="card bg-white rounded-2xl shadow-xl p-6 transform transition-all duration-300 ease-in-out"
-            data-model="NVIDIA GeForce RTX 4090"
-            data-vram="24GB GDDR6X"
-            data-bus="PCIe 4.0 x16"
-            data-cuda="16384"
-            data-boost-clock="2.52 GHz"
-            data-memory-speed="21 Gbps"
-            data-tdp="450W">
-            <img src="https://placehold.co/300x200/4F46E5/FFFFFF?text=RTX+4090" alt="RTX 4090 Görseli" class="w-full h-40 object-cover rounded-xl mb-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/300x200/9CA3AF/FFFFFF?text=Görsel+Yok';">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">NVIDIA GeForce RTX 4090</h2>
-            <ul class="text-gray-700 text-sm space-y-1">
-                <li><strong class="font-semibold">VRAM:</strong> 24GB GDDR6X</li>
-                <li><strong class="font-semibold">Veri Yolu Arayüzü:</strong> PCIe 4.0 x16</li>
-                <li><strong class="font-semibold">CUDA Çekirdekleri:</strong> 16384</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Modal Structure -->
-    <div id="cardModal" class="modal-overlay">
-        <div class="modal-content">
-            <button class="close-button" id="closeModal">&times;</button>
-            <h2 id="modalTitle" class="text-3xl font-extrabold text-gray-900 mb-6 border-b pb-3 border-gray-200"></h2>
-            <div id="modalBody" class="text-gray-800 text-lg space-y-4">
-                <!-- Card details will be inserted here by JavaScript -->
+        <div class="flex flex-col md:flex-row justify-center items-center gap-4 mb-10">
+            <div class="flex items-center gap-2">
+                <label for="compareSystemA" class="font-semibold text-gray-700" data-key="compareSysALabel">Sistem A:</label>
+                <select id="compareSystemA" class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-md"></select>
             </div>
-            <div class="mt-8 flex justify-center">
-                <button onclick="window.open('https://www.nvidia.com/tr-tr/geforce/graphics-cards/rtx/', '_blank')" class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-200 ease-in-out transform hover:scale-105">
-                    Daha Fazla Bilgi Edinin
-                </button>
+            <div class="flex items-center gap-2">
+                <label for="compareSystemB" class="font-semibold text-gray-700" data-key="compareSysBLabel">Sistem B:</label>
+                <select id="compareSystemB" class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-md"></select>
             </div>
+            <button id="compareButton" class="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold rounded-lg shadow-lg hover:from-blue-700 hover:to-indigo-800 transition transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300" data-key="compareButton">
+                Seçili Sistemleri Karşılaştır
+            </button>
+        </div>
+
+        <div id="errorMessage" class="hidden mt-8 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md text-center error-message"></div>
+
+        <!-- İki Sistem Karşılaştırma Sonuçları Alanı -->
+        <div id="comparisonResults" class="hidden border-t-2 border-gray-200 pt-8 mt-8 comparison-results-section">
+            <h2 id="comparisonTitle" class="text-3xl font-bold text-center text-gray-800 mb-6"></h2>
+
+            <!-- Genel Bilgiler (Sistem A ve Sistem B) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-8">
+                <div id="system1Info" class="bg-indigo-50 p-6 rounded-lg shadow-md flex flex-col justify-between system-panel"></div>
+                <div id="system2Info" class="bg-emerald-50 p-6 rounded-lg shadow-md flex flex-col justify-between system-panel even-system"></div>
+            </div>
+
+            <!-- Toplam Puanlar (Sistem A ve Sistem B) -->
+            <div id="totalScoreComparisonBar" class="bar-chart-section">
+                <!-- İçerik JavaScript ile doldurulacak -->
+            </div>
+
+            <!-- Bileşen Bazında Karşılaştırma Barları (Sistem A ve Sistem B) -->
+            <div class="mt-8">
+                <div id="cpuComparisonBar" class="bar-chart-section"></div>
+                <div id="gpuComparisonBar" class="bar-chart-section"></div>
+                <div id="ramComparisonBar" class="bar-chart-section"></div>
+                <div id="storageComparisonBar" class="bar-chart-section"></div>
+                <div id="psuComparisonBar" class="bar-chart-section"></div>
+            </div>
+
+            <!-- Darboğaz Sonuçları (Sistem A ve Sistem B) -->
+            <div id="bottleneckAnalysis" class="mt-10 p-6 bg-purple-50 border border-purple-200 rounded-lg text-purple-800 bottleneck-analysis"></div>
+        </div>
+
+        <!-- Tüm Sistem Karşılaştırma Sonuçları Alanı -->
+        <div id="allSystemsComparisonResults" class="hidden border-t-2 border-gray-200 pt-8 mt-8 comparison-results-section">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-6" data-key="allSystemsComparisonTitle">Tüm Sistemlerin Performans Karşılaştırması</h2>
+
+            <div id="allTotalScoreComparisonBar" class="bar-chart-section">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2 text-center" data-key="totalScoreComparison">Toplam Puan Karşılaştırması</h3>
+                <div id="allTotalBarContainer" class="bar-chart-container"></div>
+            </div>
+
+            <div id="allCpuComparisonBar" class="bar-chart-section">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2 text-center" data-key="cpuPerformance">İşlemci (CPU) Performansı</h3>
+                <div id="allCpuBarContainer" class="bar-chart-container"></div>
+            </div>
+
+            <div id="allGpuComparisonBar" class="bar-chart-section">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2 text-center" data-key="gpuPerformance">Ekran Kartı (GPU) Performansı</h3>
+                <div id="allGpuBarContainer" class="bar-chart-container"></div>
+            </div>
+
+            <div id="allRamComparisonBar" class="bar-chart-section">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2 text-center" data-key="ramPerformance">Bellek (RAM) Performansı</h3>
+                <div id="allRamBarContainer" class="bar-chart-container"></div>
+            </div>
+
+            <div id="allStorageComparisonBar" class="bar-chart-section">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2 text-center" data-key="storagePerformance">Depolama Performansı</h3>
+                <div id="allStorageBarContainer" class="bar-chart-container"></div>
+            </div>
+
+            <div id="allPsuComparisonBar" class="bar-chart-section">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2 text-center" data-key="psuSufficiency">Güç Kaynağı (PSU) Yeterliliği</h3>
+                <div id="allPsuBarContainer" class="bar-chart-container"></div>
+            </div>
+        </div>
+
+        <div class="mt-10 p-6 bg-blue-50 border border-blue-200 rounded-lg text-blue-800 info-message">
+            <h3 class="text-xl font-semibold mb-3" data-key="scoreNoteTitle">Puanlama Hakkında Not:</h3>
+            <p class="mb-2" data-key="scoreNoteCPU">
+                <span class="font-bold">CPU</span> ve <span class="font-bold">GPU</span> puanları, yaklaşık PassMark benchmark sonuçlarına dayanmaktadır. Bu puanlar, bileşenlerin teorik performansını gösterir ve gerçek dünya performansı farklılık gösterebilir.
+            </p>
+            <p class="mb-2" data-key="scoreNoteRAM">
+                <span class="font-bold">RAM, Depolama</span> ve <span class="font-bold">PSU</span> için ise sistemler arasındaki
+                <span class="font-bold">göreceli performansı ve güncelliği</span> yansıtan basit puanlar atanmıştır (daha yüksek puan daha iyi anlamına gelir). Bu puanlar doğrudan benchmark testlerinden alınmamıştır, genel bir referans olarak kullanılabilir.
+            </p>
+            <p class="mb-2" data-key="scoreNoteBottleneck">
+                <span class="font-bold">Darboğaz yüzdesi</span>, İşlemci ve Ekran Kartı puanları arasındaki farka dayanarak hesaplanır. Daha yüksek bir yüzde, bileşenler arasında daha büyük bir performans dengesizliği olduğunu gösterir. Bu, sistemin genel performansının bir bileşen tarafından kısıtlandığı anlamına gelebilir.
+            </p>
+            <ul class="list-disc list-inside mt-3">
+                <li data-key="exampleCPUScores">Örnek CPU Skorları (Yaklaşık PassMark CPU Mark):
+                    <ul class="list-disc list-inside ml-4">
+                        <li>Intel Core i7-4790: ~7266</li>
+                        <li>AMD Ryzen 5 2600X: ~13800</li>
+                        <li>Intel Core i9-14900K: ~62000</li>
+                    </ul>
+                </li>
+                <li data-key="exampleGPUScores">Örnek GPU Skorları (Yaklaşık PassMark G3D Mark):
+                    <ul class="list-disc list-inside ml-4">
+                        <li>NVIDIA GeForce GTX 960: ~8000</li>
+                        <li>AMD Radeon RX 570: ~12000</li>
+                        <li>NVIDIA GeForce RTX 4080: ~34440</li>
+                    </ul>
+                </li>
+            </ul>
         </div>
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const cards = document.querySelectorAll(".card");
-            const modal = document.getElementById("cardModal");
-            const closeModalBtn = document.getElementById("closeModal");
-            const modalTitle = document.getElementById("modalTitle");
-            const modalBody = document.getElementById("modalBody");
+        // Çeviriler
+        const translations = {
+            tr: {
+                appTitle: "Özel Sistem Karşılaştırma Aracı",
+                themeToggle: "Tema Değiştir",
+                systemNameLabel: "Sistem Adı:",
+                systemPlaceholder: "Sistem",
+                cpuSearchLabel: "CPU Ara:",
+                gpuSearchLabel: "GPU Ara:",
+                cpuSearchPlaceholder: "İşlemci Ara...",
+                gpuSearchPlaceholder: "Ekran Kartı Ara...",
+                cpuLabel: "İşlemci (CPU):",
+                gpuLabel: "Ekran Kartı (GPU):",
+                ramLabel: "Bellek (RAM):",
+                storageLabel: "Depolama:",
+                psuLabel: "Güç Kaynağı (PSU):",
+                addSystemButton: "Yeni Sistem Ekle",
+                compareAllSystemsButton: "Tüm Sistemleri Karşılaştır",
+                compareSysALabel: "Sistem A:",
+                compareSysBLabel: "Sistem B:",
+                compareButton: "Seçili Sistemleri Karşılaştır",
+                errorMessageTwoSystems: "Lütfen seçilen Sistem A ve Sistem B için İşlemci ve Ekran Kartı seçimlerini kontrol edin.",
+                errorMessageAllSystems: "Karşılaştırılabilir sistem bulunamadı. Lütfen İşlemci ve Ekran Kartı seçili olan en az bir sistem oluşturun.",
+                allSystemsComparisonTitle: "Tüm Sistemlerin Performans Karşılaştırması",
+                infoSystemSuffix: "Bilgileri",
+                totalScoreComparison: "Toplam Puan Karşılaştırması",
+                cpuPerformance: "İşlemci (CPU) Performansı",
+                gpuPerformance: "Ekran Kartı (GPU) Performansı",
+                ramPerformance: "Bellek (RAM) Performansı",
+                storagePerformance: "Depolama Performansı",
+                psuSufficiency: "Güç Kaynağı (PSU) Yeterliliği",
+                bottleneckAnalysis: "Darboğaz Analizi:",
+                bottleneckSuffix: "Darboğaz:",
+                scoreNoteTitle: "Puanlama Hakkında Not:",
+                scoreNoteCPU: "CPU ve GPU puanları, yaklaşık PassMark benchmark sonuçlarına dayanmaktadır. Bu puanlar, bileşenlerin teorik performansını gösterir ve gerçek dünya performansı farklılık gösterebilir.",
+                scoreNoteRAM: "RAM, Depolama ve PSU için ise sistemler arasındaki göreceli performansı ve güncelliği yansıtan basit puanlar atanmıştır (daha yüksek puan daha iyi anlamına gelir). Bu puanlar doğrudan benchmark testlerinden alınmamıştır, genel bir referans olarak kullanılabilir.",
+                scoreNoteBottleneck: "Darboğaz yüzdesi, İşlemci ve Ekran Kartı puanları arasındaki farka dayanarak hesaplanır. Daha yüksek bir yüzde, bileşenler arasında daha büyük bir performans dengesizliği olduğunu gösterir. Bu, sistemin genel performansının bir bileşen tarafından kısıtlandığı anlamına gelebilir.",
+                exampleCPUScores: "Örnek CPU Skorları (Yaklaşık PassMark CPU Mark):",
+                exampleGPUScores: "Örnek GPU Skorları (Yaklaşık PassMark G3D Mark):",
+                bottleneckExplanation0: "Çok az veya hiç darboğaz yok. Sistem oldukça dengeli.",
+                bottleneckExplanation1: "Minimal darboğaz. Çoğu senaryoda fark edilmez ancak küçük bir bileşen dengesizliği var.",
+                bottleneckExplanation2: "Orta seviye darboğaz. Bazı oyunlarda veya uygulamalarda hissedilebilir bir performans düşüşü yaşanabilir.",
+                bottleneckExplanation3: "Yüksek darboğaz. Seçilen ${component} diğer bileşeni önemli ölçüde kısıtlayabilir, performans büyük ölçüde etkilenebilir.",
+                balanced: "Dengeli",
+                processor: "İşlemci (CPU)",
+                graphicsCard: "Ekran Kartı (GPU)",
+                selectOption: "-- Seçin --"
+            },
+            en: {
+                appTitle: "Custom System Comparison Tool",
+                themeToggle: "Toggle Theme",
+                systemNameLabel: "System Name:",
+                systemPlaceholder: "System",
+                cpuSearchLabel: "Search CPU:",
+                gpuSearchLabel: "Search GPU:",
+                cpuSearchPlaceholder: "Search CPU...",
+                gpuSearchPlaceholder: "Search GPU...",
+                cpuLabel: "Processor (CPU):",
+                gpuLabel: "Graphics Card (GPU):",
+                ramLabel: "Memory (RAM):",
+                storageLabel: "Storage:",
+                psuLabel: "Power Supply (PSU):",
+                addSystemButton: "Add New System",
+                compareAllSystemsButton: "Compare All Systems",
+                compareSysALabel: "System A:",
+                compareSysBLabel: "System B:",
+                compareButton: "Compare Selected Systems",
+                errorMessageTwoSystems: "Please check Processor and Graphics Card selections for selected System A and System B.",
+                errorMessageAllSystems: "No comparable systems found. Please create at least one system with CPU and GPU selected.",
+                comparisonTitleSuffix: "Performance Comparison",
+                allSystemsComparisonTitle: "All Systems Performance Comparison",
+                infoSystemSuffix: "Information",
+                totalScoreComparison: "Total Score Comparison",
+                cpuPerformance: "Processor (CPU) Performance",
+                gpuPerformance: "Graphics Card (GPU) Performance",
+                ramPerformance: "Memory (RAM) Performance",
+                storagePerformance: "Storage Performance",
+                psuSufficiency: "Power Supply (PSU) Sufficiency",
+                bottleneckAnalysis: "Bottleneck Analysis:",
+                bottleneckSuffix: "Bottleneck:",
+                scoreNoteTitle: "Note on Scoring:",
+                scoreNoteCPU: "CPU and GPU scores are based on approximate PassMark benchmark results. These scores represent the theoretical performance of components and actual real-world performance may vary.",
+                scoreNoteRAM: "For RAM, Storage, and PSU, simple scores are assigned that reflect the relative performance and modernity between systems (higher score means better). These scores are not directly taken from benchmark tests and can be used as a general reference.",
+                scoreNoteBottleneck: "The bottleneck percentage is calculated based on the difference between Processor and Graphics Card scores. A higher percentage indicates a greater performance imbalance between components. This may mean that the overall system performance is limited by one component.",
+                exampleCPUScores: "Example CPU Scores (Approx. PassMark CPU Mark):",
+                exampleGPUScores: "Example GPU Scores (Approx. PassMark G3D Mark):",
+                bottleneckExplanation0: "Very little or no bottleneck. The system is well-balanced.",
+                bottleneckExplanation1: "Minimal bottleneck. Unnoticeable in most scenarios, but there's a slight component imbalance.",
+                bottleneckExplanation2: "Medium bottleneck. A noticeable performance drop may occur in some games or applications.",
+                bottleneckExplanation3: "High bottleneck. The selected ${component} may significantly limit the other component, greatly affecting performance.",
+                balanced: "Balanced",
+                processor: "Processor (CPU)",
+                graphicsCard: "Graphics Card (GPU)",
+                selectOption: "-- Select --"
+            }
+        };
 
-            // Initial fade-in animation for cards
-            cards.forEach((card, index) => {
-                setTimeout(() => {
-                    card.classList.add("fade-in");
-                }, index * 100 + 300); // Added a slight initial delay for overall page load
+        let currentLang = localStorage.getItem('language') || 'tr'; // Default language is Turkish
+        const allSystems = {}; // Stores all created system configurations by their ID
+
+        // Component Data (PassMark and relative scores)
+        const cpuData = [
+            // Intel CPUs (2011-2025) - Expanded list
+            { id: 'i3-2100', name: 'Intel Core i3-2100', details: { tr: '2 Çekirdek, 4 İzlek', en: '2 Cores, 4 Threads' }, score: 3700 }, // Sandy Bridge 2011
+            { id: 'i5-2400', name: 'Intel Core i5-2400', details: { tr: '4 Çekirdek, 4 İzlek', en: '4 Cores, 4 Threads' }, score: 6000 }, // Sandy Bridge 2011
+            { id: 'i7-2600k', name: 'Intel Core i7-2600K', details: { tr: '4 Çekirdek, 8 İzlek', en: '4 Cores, 8 Threads' }, score: 8500 }, // Sandy Bridge 2011
+            { id: 'i3-3220', name: 'Intel Core i3-3220', details: { tr: '2 Çekirdek, 4 İzlek', en: '2 Cores, 4 Threads' }, score: 4000 }, // Ivy Bridge 2012
+            { id: 'i5-3570k', name: 'Intel Core i5-3570K', details: { tr: '4 Çekirdek, 4 İzlek', en: '4 Cores, 4 Threads' }, score: 7000 }, // Ivy Bridge 2012
+            { id: 'i7-3770k', name: 'Intel Core i7-3770K', details: { tr: '4 Çekirdek, 8 İzlek', en: '4 Cores, 8 Threads' }, score: 9800 }, // Ivy Bridge 2012
+            { id: 'i3-4130', name: 'Intel Core i3-4130', details: { tr: '2 Çekirdek, 4 İzlek', en: '2 Cores, 4 Threads' }, score: 3700 }, // Haswell 2013
+            { id: 'i5-4460', name: 'Intel Core i5-4460', details: { tr: '4 Çekirdek, 4 İzlek', en: '4 Cores, 4 Threads' }, score: 6600 }, // Haswell 2014
+            { id: 'i5-4690k', name: 'Intel Core i5-4690K', details: { tr: '4 Çekirdek, 4 İzlek', en: '4 Cores, 4 Threads' }, score: 7780 }, // Haswell Refresh 2014
+            { id: 'i7-4790', name: 'Intel Core i7-4790', details: { tr: '4 Çekirdek, 8 İzlek', en: '4 Cores, 8 Threads' }, score: 7266 }, // Haswell 2014
+            { id: 'i7-4790k', name: 'Intel Core i7-4790K', details: { tr: '4 Çekirdek, 8 İzlek', en: '4 Cores, 8 Threads' }, score: 10300 }, // Haswell Refresh 2014
+            { id: 'i7-5775c', name: 'Intel Core i7-5775C', details: { tr: '4 Çekirdek, 8 İzlek', en: '4 Cores, 8 Threads' }, score: 10000 }, // Broadwell 2015
+            { id: 'i3-6100', name: 'Intel Core i3-6100', details: { tr: '2 Çekirdek, 4 İzlek', en: '2 Cores, 4 Threads' }, score: 5500 }, // Skylake 2015
+            { id: 'i5-6600k', name: 'Intel Core i5-6600K', details: { tr: '4 Çekirdek, 4 İzlek', en: '4 Cores, 4 Threads' }, score: 7900 }, // Skylake 2015
+            { id: 'i7-6700k', name: 'Intel Core i7-6700K', details: { tr: '4 Çekirdek, 8 İzlek', en: '4 Cores, 8 Threads' }, score: 10700 }, // Skylake 2015
+            { id: 'i3-7100', name: 'Intel Core i3-7100', details: { tr: '2 Çekirdek, 4 İzlek', en: '2 Cores, 4 Threads' }, score: 6000 }, // Kaby Lake 2017
+            { id: 'i5-7600k', name: 'Intel Core i5-7600K', details: { tr: '4 Çekirdek, 4 İzlek', en: '4 Cores, 4 Threads' }, score: 8500 }, // Kaby Lake 2017
+            { id: 'i7-7700k', name: 'Intel Core i7-7700K', details: { tr: '4 Çekirdek, 8 İzlek', en: '4 Cores, 8 Threads' }, score: 11500 }, // Kaby Lake 2017
+            { id: 'i3-8100', name: 'Intel Core i3-8100', details: { tr: '4 Çekirdek, 4 İzlek', en: '4 Cores, 4 Threads' }, score: 8000 }, // Coffee Lake 2017
+            { id: 'i5-8400', name: 'Intel Core i5-8400', details: { tr: '6 Çekirdek, 6 İzlek', en: '6 Cores, 6 Threads' }, score: 10500 }, // Coffee Lake 2017
+            { id: 'i5-8600k', name: 'Intel Core i5-8600K', details: { tr: '6 Çekirdek, 6 İzlek', en: '6 Cores, 6 Threads' }, score: 12500 }, // Coffee Lake 2017
+            { id: 'i7-8700k', name: 'Intel Core i7-8700K', details: { tr: '6 Çekirdek, 12 İzlek', en: '6 Cores, 12 Threads' }, score: 16000 }, // Coffee Lake 2017
+            { id: 'i9-9900k', name: 'Intel Core i9-9900K', details: { tr: '8 Çekirdek, 16 İzlek', en: '8 Cores, 16 Threads' }, score: 22800 }, // Coffee Lake Refresh 2018
+            { id: 'i5-9600k', name: 'Intel Core i5-9600K', details: { tr: '6 Çekirdek, 6 İzlek', en: '6 Cores, 6 Threads' }, score: 14000 }, // Coffee Lake Refresh 2018
+            { id: 'i7-9700k', name: 'Intel Core i7-9700K', details: { tr: '8 Çekirdek, 8 İzlek', en: '8 Cores, 8 Threads' }, score: 18500 }, // Coffee Lake Refresh 2018
+            { id: 'i9-9900ks', name: 'Intel Core i9-9900KS', details: { tr: '8 Çekirdek, 16 İzlek', en: '8 Cores, 16 Threads' }, score: 23500 }, // Coffee Lake Refresh 2019
+            { id: 'i3-10100', name: 'Intel Core i3-10100', details: { tr: '4 Çekirdek, 8 İzlek', en: '4 Cores, 8 Threads' }, score: 9000 }, // Comet Lake 2020
+            { id: 'i5-10400f', name: 'Intel Core i5-10400F', details: { tr: '6 Çekirdek, 12 İzlek', en: '6 Cores, 12 Threads' }, score: 12127 }, // Comet Lake 2020
+            { id: 'i5-10600k', name: 'Intel Core i5-10600K', details: { tr: '6 Çekirdek, 12 İzlek', en: '6 Cores, 12 Threads' }, score: 15500 }, // Comet Lake 2020
+            { id: 'i7-10700k', name: 'Intel Core i7-10700K', details: { tr: '8 Çekirdek, 16 İzlek', en: '8 Cores, 16 Threads' }, score: 20000 }, // Comet Lake 2020
+            { id: 'i9-10900k', name: 'Intel Core i9-10900K', details: { tr: '10 Çekirdek, 20 İzlek', en: '10 Cores, 20 Threads' }, score: 23500 }, // Comet Lake 2020
+            { id: 'i5-11400f', name: 'Intel Core i5-11400F', details: { tr: '6 Çekirdek, 12 İzlek', en: '6 Cores, 12 Threads' }, score: 17000 }, // Rocket Lake 2021
+            { id: 'i5-11600k', name: 'Intel Core i5-11600K', details: { tr: '6 Çekirdek, 12 İzlek', en: '6 Cores, 12 Threads' }, score: 21500 }, // Rocket Lake 2021
+            { id: 'i7-11700k', name: 'Intel Core i7-11700K', details: { tr: '8 Çekirdek, 16 İzlek', en: '8 Cores, 16 Threads' }, score: 25000 }, // Rocket Lake 2021
+            { id: 'i9-11900k', name: 'Intel Core i9-11900K', details: { tr: '8 Çekirdek, 16 İzlek', en: '8 Cores, 16 Threads' }, score: 25500 }, // Rocket Lake 2021
+            { id: 'i3-12100f', name: 'Intel Core i3-12100F', details: { tr: '4 Çekirdek, 8 İzlek', en: '4 Cores, 8 Threads' }, score: 14000 }, // Alder Lake 2021
+            { id: 'i5-12400f', name: 'Intel Core i5-12400F', details: { tr: '6 Çekirdek, 12 İzlek', en: '6 Cores, 12 Threads' }, score: 19000 }, // Alder Lake 2021
+            { id: 'i5-12600k', name: 'Intel Core i5-12600K', details: { tr: '10 Çekirdek, 16 İzlek', en: '10 Cores, 16 Threads' }, score: 27500 }, // Alder Lake 2021
+            { id: 'i7-12700k', name: 'Intel Core i7-12700K', details: { tr: '12 Çekirdek, 20 İzlek', en: '12 Cores, 20 Threads' }, score: 34967 }, // Alder Lake 2021
+            { id: 'i9-12900k', name: 'Intel Core i9-12900K', details: { tr: '16 Çekirdek, 24 İzlek', en: '16 Cores, 24 Threads' }, score: 39000 }, // Alder Lake 2021
+            { id: 'i5-13400f', name: 'Intel Core i5-13400F', details: { tr: '10 Çekirdek, 16 İzlek', en: '10 Cores, 16 Threads' }, score: 24000 }, // Raptor Lake 2022
+            { id: 'i5-13600k', name: 'Intel Core i5-13600K', details: { tr: '14 Çekirdek, 20 İzlek', en: '14 Cores, 20 Threads' }, score: 40000 }, // Raptor Lake 2022
+            { id: 'i7-13700k', name: 'Intel Core i7-13700K', details: { tr: '16 Çekirdek, 24 İzlek', en: '16 Cores, 24 Threads' }, score: 49000 }, // Raptor Lake 2022
+            { id: 'i9-13900k', name: 'Intel Core i9-13900K', details: { tr: '24 Çekirdek, 32 İzlek', en: '24 Cores, 32 Threads' }, score: 58000 }, // Raptor Lake 2022
+            { id: 'i5-14600k', name: 'Intel Core i5-14600K', details: { tr: '14 Çekirdek, 20 İzlek', en: '14 Cores, 20 Threads' }, score: 43000 }, // Raptor Lake Refresh 2023
+            { id: 'i7-14700k', name: 'Intel Core i7-14700K', details: { tr: '20 Çekirdek, 28 İzlek', en: '20 Cores, 28 Threads' }, score: 55000 }, // Raptor Lake Refresh 2023
+            { id: 'i9-14900k', name: 'Intel Core i9-14900K', details: { tr: '24 Çekirdek, 32 İzlek', en: '24 Cores, 32 Threads' }, score: 62000 }, // Raptor Lake Refresh 2023
+            { id: 'i5-15600k', name: 'Intel Core i5-15600K', details: { tr: '14 Çekirdek, 20 İzlek', en: '14 Cores, 20 Threads' }, score: 46000 }, // Lunar Lake (placeholder) 2024
+            { id: 'i7-15700k', name: 'Intel Core i7-15700K', details: { tr: '20 Çekirdek, 28 İzlek', en: '20 Cores, 28 Threads' }, score: 58000 }, // Lunar Lake (placeholder) 2024
+            { id: 'i9-15900k', name: 'Intel Core i9-15900K', details: { tr: '24 Çekirdek, 32 İzlek', en: '24 Cores, 32 Threads' }, score: 65000 }, // Lunar Lake (placeholder) 2024
+
+            // AMD CPUs (2011-2025) - Expanded list
+            { id: 'fx-4100', name: 'AMD FX-4100', details: { tr: '4 Çekirdek', en: '4 Cores' }, score: 4000 }, // Zambezi 2011
+            { id: 'fx-4300', name: 'AMD FX-4300', details: { tr: '4 Çekirdek', en: '4 Cores' }, score: 5000 }, // Vishera 2012
+            { id: 'fx-6100', name: 'AMD FX-6100', details: { tr: '6 Çekirdek', en: '6 Cores' }, score: 5500 }, // Zambezi 2011
+            { id: 'fx-6300', name: 'AMD FX-6300', details: { tr: '6 Çekirdek', en: '6 Cores' }, score: 6300 }, // Vishera 2012
+            { id: 'fx-8150', name: 'AMD FX-8150', details: { tr: '8 Çekirdek', en: '8 Cores' }, score: 7500 }, // Zambezi 2011
+            { id: 'fx-8350', name: 'AMD FX-8350', details: { tr: '8 Çekirdek', en: '8 Cores' }, score: 8900 }, // Vishera 2012
+            { id: 'a10-7850k', name: 'AMD A10-7850K', details: { tr: '4 Çekirdek (APU)', en: '4 Cores (APU)' }, score: 5000 }, // Kaveri 2014
+            { id: 'r3-1200', name: 'AMD Ryzen 3 1200', details: { tr: '4 Çekirdek, 4 İzlek', en: '4 Cores, 4 Threads' }, score: 6200 }, // Ryzen 1000 2017
+            { id: 'r5-1400', name: 'AMD Ryzen 5 1400', details: { tr: '4 Çekirdek, 8 İzlek', en: '4 Cores, 8 Threads' }, score: 9500 }, // Ryzen 1000 2017
+            { id: 'r5-1600', name: 'AMD Ryzen 5 1600', details: { tr: '6 Çekirdek, 12 İzlek', en: '6 Cores, 12 Threads' }, score: 12271 }, // Ryzen 1000 2017
+            { id: 'r7-1700', name: 'AMD Ryzen 7 1700', details: { tr: '8 Çekirdek, 16 İzlek', en: '8 Cores, 16 Threads' }, score: 14000 }, // Ryzen 1000 2017
+            { id: 'r7-1700x', name: 'AMD Ryzen 7 1700X', details: { tr: '8 Çekirdek, 16 İzlek', en: '8 Cores, 16 Threads' }, score: 15000 }, // Ryzen 1000 2017
+            { id: 'r5-2400g', name: 'AMD Ryzen 5 2400G', details: { tr: '4 Çekirdek, 8 İzlek (APU)', en: '4 Cores, 8 Threads (APU)' }, score: 9000 }, // Raven Ridge 2018
+            { id: 'r5-2600', name: 'AMD Ryzen 5 2600', details: { tr: '6 Çekirdek, 12 İzlek', en: '6 Cores, 12 Threads' }, score: 13000 }, // Ryzen 2000 2018
+            { id: 'r5-2600x', name: 'AMD Ryzen 5 2600X', details: { tr: '6 Çekirdek, 12 İzlek', en: '6 Cores, 12 Threads' }, score: 13800 }, // Ryzen 2000 2018
+            { id: 'r7-2700', name: 'AMD Ryzen 7 2700', details: { tr: '8 Çekirdek, 16 İzlek', en: '8 Cores, 16 Threads' }, score: 16500 }, // Ryzen 2000 2018
+            { id: 'r7-2700x', name: 'AMD Ryzen 7 2700X', details: { tr: '8 Çekirdek, 16 İzlek', en: '8 Cores, 16 Threads' }, score: 17800 }, // Ryzen 2000 2018
+            { id: 'r5-3400g', name: 'AMD Ryzen 5 3400G', details: { tr: '4 Çekirdek, 8 İzlek (APU)', en: '4 Cores, 8 Threads (APU)' }, score: 10000 }, // Picasso 2019
+            { id: 'r3-3100', name: 'AMD Ryzen 3 3100', details: { tr: '4 Çekirdek, 8 İzlek', en: '4 Cores, 8 Threads' }, score: 10400 }, // Ryzen 3000 2020
+            { id: 'r5-3500x', name: 'AMD Ryzen 5 3500X', details: { tr: '6 Çekirdek, 6 İzlek', en: '6 Cores, 6 Threads' }, score: 13000 }, // Ryzen 3000 2019
+            { id: 'r5-3600', name: 'AMD Ryzen 5 3600', details: { tr: '6 Çekirdek, 12 İzlek', en: '6 Cores, 12 Threads' }, score: 17750 }, // Ryzen 3000 2019
+            { id: 'r7-3700x', name: 'AMD Ryzen 7 3700X', details: { tr: '8 Çekirdek, 16 İzlek', en: '8 Cores, 16 Threads' }, score: 23600 }, // Ryzen 3000 2019
+            { id: 'r9-3900x', name: 'AMD Ryzen 9 3900X', details: { tr: '12 Çekirdek, 24 İzlek', en: '12 Cores, 24 Threads' }, score: 33400 }, // Ryzen 3000 2019
+            { id: 'r9-3950x', name: 'AMD Ryzen 9 3950X', details: { tr: '16 Çekirdek, 32 İzlek', en: '16 Cores, 32 Threads' }, score: 39000 }, // Ryzen 3000 2019
+            { id: 'r5-5500', name: 'AMD Ryzen 5 5500', details: { tr: '6 Çekirdek, 12 İzlek', en: '6 Cores, 12 Threads' }, score: 19000 }, // Ryzen 5000 2022
+            { id: 'r5-5600', name: 'AMD Ryzen 5 5600', details: { tr: '6 Çekirdek, 12 İzlek', en: '6 Cores, 12 Threads' }, score: 20000 }, // Ryzen 5000 2022
+            { id: 'r5-5600x', name: 'AMD Ryzen 5 5600X', details: { tr: '6 Çekirdek, 12 İzlek', en: '6 Cores, 12 Threads' }, score: 21873 }, // Ryzen 5000 2020
+            { id: 'r5-5600g', name: 'AMD Ryzen 5 5600G', details: { tr: '6 Çekirdek, 12 İzlek (APU)', en: '6 Cores, 12 Threads (APU)' }, score: 20500 }, // Cezanne 2021
+            { id: 'r7-5700x', name: 'AMD Ryzen 7 5700X', details: { tr: '8 Çekirdek, 16 İzlek', en: '8 Cores, 16 Threads' }, score: 27000 }, // Ryzen 5000 2022
+            { id: 'r7-5700g', name: 'AMD Ryzen 7 5700G', details: { tr: '8 Çekirdek, 16 İzlek (APU)', en: '8 Cores, 16 Threads (APU)' }, score: 24000 }, // Cezanne 2021
+            { id: 'r7-5800x', name: 'AMD Ryzen 7 5800X', details: { tr: '8 Çekirdek, 16 İzlek', en: '8 Cores, 16 Threads' }, score: 30000 }, // Ryzen 5000 2020
+            { id: 'r7-5800x3d', name: 'AMD Ryzen 7 5800X3D', details: { tr: '8 Çekirdek, 16 İzlek', en: '8 Cores, 16 Threads' }, score: 32000 }, // Ryzen 5000 2022
+            { id: 'r9-5900x', name: 'AMD Ryzen 9 5900X', details: { tr: '12 Çekirdek, 24 İzlek', en: '12 Cores, 24 Threads' }, score: 39000 }, // Ryzen 5000 2020
+            { id: 'r9-5950x', name: 'AMD Ryzen 9 5950X', details: { tr: '16 Çekirdek, 32 İzlek', en: '16 Cores, 32 Threads' }, score: 45000 }, // Ryzen 5000 2020
+            { id: 'r5-7500f', name: 'AMD Ryzen 5 7500F', details: { tr: '6 Çekirdek, 12 İzlek', en: '6 Cores, 12 Threads' }, score: 26000 }, // Ryzen 7000 2023
+            { id: 'r5-7600', name: 'AMD Ryzen 5 7600', details: { tr: '6 Çekirdek, 12 İzlek', en: '6 Cores, 12 Threads' }, score: 26000 }, // Ryzen 7000 2023
+            { id: 'r5-7600x', name: 'AMD Ryzen 5 7600X', details: { tr: '6 Çekirdek, 12 İzlek', en: '6 Cores, 12 Threads' }, score: 28000 }, // Ryzen 7000 2022
+            { id: 'r7-7700', name: 'AMD Ryzen 7 7700', details: { tr: '8 Çekirdek, 16 İzlek', en: '8 Cores, 16 Threads' }, score: 34000 }, // Ryzen 7000 2023
+            { id: 'r7-7700x', name: 'AMD Ryzen 7 7700X', details: { tr: '8 Çekirdek, 16 İzlek', en: '8 Cores, 16 Threads' }, score: 36000 }, // Ryzen 7000 2022
+            { id: 'r9-7900', name: 'AMD Ryzen 9 7900', details: { tr: '12 Çekirdek, 24 İzlek', en: '12 Cores, 24 Threads' }, score: 42000 }, // Ryzen 7000 2023
+            { id: 'r9-7900x', name: 'AMD Ryzen 9 7900X', details: { tr: '12 Çekirdek, 24 İzlek', en: '12 Cores, 24 Threads' }, score: 45000 }, // Ryzen 7000 2022
+            { id: 'r9-7950x', name: 'AMD Ryzen 9 7950X', details: { tr: '16 Çekirdek, 32 İzlek', en: '16 Cores, 32 Threads' }, score: 59000 }, // Ryzen 7000 2022
+            { id: 'r7-7800x3d', name: 'AMD Ryzen 7 7800X3D', details: { tr: '8 Çekirdek, 16 İzlek', en: '8 Cores, 16 Threads' }, score: 48674 }, // Ryzen 7000 X3D 2023
+            { id: 'r9-7900x3d', name: 'AMD Ryzen 9 7900X3D', details: { tr: '12 Çekirdek, 24 İzlek', en: '12 Cores, 24 Threads' }, score: 55000 }, // Ryzen 7000 X3D 2023
+            { id: 'r9-7950x3d', name: 'AMD Ryzen 9 7950X3D', details: { tr: '16 Çekirdek, 32 İzlek', en: '16 Cores, 32 Threads' }, score: 63500 }, // Ryzen 7000 X3D 2023
+            { id: 'r5-8500g', name: 'AMD Ryzen 5 8500G', details: { tr: '6 Çekirdek, 12 İzlek (APU)', en: '6 Cores, 12 Threads (APU)' }, score: 28000 }, // Phoenix 2024
+            { id: 'r5-8600g', name: 'AMD Ryzen 5 8600G', details: { tr: '6 Çekirdek, 12 İzlek (APU)', en: '6 Cores, 12 Threads (APU)' }, score: 30000 }, // Phoenix 2024
+            { id: 'r7-8700g', name: 'AMD Ryzen 7 8700G', details: { tr: '8 Çekirdek, 16 İzlek (APU)', en: '8 Cores, 16 Threads (APU)' }, score: 38000 }, // Phoenix 2024
+            { id: 'r7-9700x', name: 'AMD Ryzen 7 9700X', details: { tr: '8 Çekirdek, 16 İzlek (tahmini)', en: '8 Cores, 16 Threads (estimated)' }, score: 40000 }, // Zen 5 (placeholder) 2024
+            { id: 'r9-9950x', name: 'AMD Ryzen 9 9950X', details: { tr: '16 Çekirdek, 32 İzlek (tahmini)', en: '16 Cores, 32 Threads (estimated)' }, score: 68000 }, // Zen 5 (placeholder) 2024
+        ];
+
+        const gpuData = [
+            // NVIDIA GPUs (2014-2025) - Expanded list
+            { id: 'gtx-750ti', name: 'NVIDIA GeForce GTX 750 Ti', details: { tr: '2GB GDDR5', en: '2GB GDDR5' }, score: 3900 },
+            { id: 'gtx-950', name: 'NVIDIA GeForce GTX 950', details: { tr: '2GB GDDR5', en: '2GB GDDR5' }, score: 5346 },
+            { id: 'gtx-960', name: 'NVIDIA GeForce GTX 960', details: { tr: '2GB GDDR5', en: '2GB GDDR5' }, score: 8000 },
+            { id: 'gtx-970', name: 'NVIDIA GeForce GTX 970', details: { tr: '4GB GDDR5', en: '4GB GDDR5' }, score: 9800 },
+            { id: 'gtx-980', name: 'NVIDIA GeForce GTX 980', details: { tr: '4GB GDDR5', en: '4GB GDDR5' }, score: 11000 },
+            { id: 'gtx-980ti', name: 'NVIDIA GeForce GTX 980 Ti', details: { tr: '6GB GDDR5', en: '6GB GDDR5' }, score: 12500 },
+            { id: 'gtx-1050', name: 'NVIDIA GeForce GTX 1050', details: { tr: '2GB GDDR5', en: '2GB GDDR5' }, score: 4500 },
+            { id: 'gtx-1050ti', name: 'NVIDIA GeForce GTX 1050 Ti', details: { tr: '4GB GDDR5', en: '4GB GDDR5' }, score: 6323 },
+            { id: 'gtx-1060-3gb', name: 'NVIDIA GeForce GTX 1060 (3GB)', details: { tr: '3GB GDDR5', en: '3GB GDDR5' }, score: 9000 },
+            { id: 'gtx-1060-6gb', name: 'NVIDIA GeForce GTX 1060 (6GB)', details: { tr: '6GB GDDR5', en: '6GB GDDR5' }, score: 10083 },
+            { id: 'gtx-1070', name: 'NVIDIA GeForce GTX 1070', details: { tr: '8GB GDDR5', en: '8GB GDDR5' }, score: 12800 },
+            { id: 'gtx-1070ti', name: 'NVIDIA GeForce GTX 1070 Ti', details: { tr: '8GB GDDR5', en: '8GB GDDR5' }, score: 14000 },
+            { id: 'gtx-1080', name: 'NVIDIA GeForce GTX 1080', details: { tr: '8GB GDDR5X', en: '8GB GDDR5X' }, score: 14700 },
+            { id: 'gtx-1080ti', name: 'NVIDIA GeForce GTX 1080 Ti', details: { tr: '11GB GDDR5X', en: '11GB GDDR5X' }, score: 17500 },
+            { id: 'gtx-1650', name: 'NVIDIA GeForce GTX 1650', details: { tr: '4GB GDDR5/6', en: '4GB GDDR5/6' }, score: 7878 },
+            { id: 'gtx-1660', name: 'NVIDIA GeForce GTX 1660', details: { tr: '6GB GDDR5', en: '6GB GDDR5' }, score: 11000 },
+            { id: 'gtx-1660s', name: 'NVIDIA GeForce GTX 1660 SUPER', details: { tr: '6GB GDDR6', en: '6GB GDDR6' }, score: 12500 },
+            { id: 'gtx-1660ti', name: 'NVIDIA GeForce GTX 1660 Ti', details: { tr: '6GB GDDR6', en: '6GB GDDR6' }, score: 13000 },
+            { id: 'rtx-2060', name: 'NVIDIA GeForce RTX 2060', details: { tr: '6GB GDDR6', en: '6GB GDDR6' }, score: 14125 },
+            { id: 'rtx-2060s', name: 'NVIDIA GeForce RTX 2060 SUPER', details: { tr: '8GB GDDR6', en: '8GB GDDR6' }, score: 15500 },
+            { id: 'rtx-2070', name: 'NVIDIA GeForce RTX 2070', details: { tr: '8GB GDDR6', en: '8GB GDDR6' }, score: 16500 },
+            { id: 'rtx-2070s', name: 'NVIDIA GeForce RTX 2070 SUPER', details: { tr: '8GB GDDR6', en: '8GB GDDR6' }, score: 18000 },
+            { id: 'rtx-2080', name: 'NVIDIA GeForce RTX 2080', details: { tr: '8GB GDDR6', en: '8GB GDDR6' }, score: 19500 },
+            { id: 'rtx-2080s', name: 'NVIDIA GeForce RTX 2080 SUPER', details: { tr: '8GB GDDR6', en: '8GB GDDR6' }, score: 20500 },
+            { id: 'rtx-2080ti', name: 'NVIDIA GeForce RTX 2080 Ti', details: { tr: '11GB GDDR6', en: '11GB GDDR6' }, score: 22000 },
+            { id: 'rtx-3050', name: 'NVIDIA GeForce RTX 3050', details: { tr: '8GB GDDR6', en: '8GB GDDR6' }, score: 11000 },
+            { id: 'rtx-3060', name: 'NVIDIA GeForce RTX 3060', details: { tr: '12GB GDDR6', en: '12GB GDDR6' }, score: 19500 },
+            { id: 'rtx-3060ti', name: 'NVIDIA GeForce RTX 3060 Ti', details: { tr: '8GB GDDR6', en: '8GB GDDR6' }, score: 20414 },
+            { id: 'rtx-3070', name: 'NVIDIA GeForce RTX 3070', details: { tr: '8GB GDDR6', en: '8GB GDDR6' }, score: 22291 },
+            { id: 'rtx-3070ti', name: 'NVIDIA GeForce RTX 3070 Ti', details: { tr: '8GB GDDR6X', en: '8GB GDDR6X' }, score: 24000 },
+            { id: 'rtx-3080', name: 'NVIDIA GeForce RTX 3080', details: { tr: '10GB GDDR6X', en: '10GB GDDR6X' }, score: 25180 },
+            { id: 'rtx-3080ti', name: 'NVIDIA GeForce RTX 3080 Ti', details: { tr: '12GB GDDR6X', en: '12GB GDDR6X' }, score: 28000 },
+            { id: 'rtx-3090', name: 'NVIDIA GeForce RTX 3090', details: { tr: '24GB GDDR6X', en: '24GB GDDR6X' }, score: 30000 },
+            { id: 'rtx-3090ti', name: 'NVIDIA GeForce RTX 3090 Ti', details: { tr: '24GB GDDR6X', en: '24GB GDDR6X' }, score: 32000 },
+            { id: 'rtx-4060', name: 'NVIDIA GeForce RTX 4060', details: { tr: '8GB GDDR6', en: '8GB GDDR6' }, score: 18000 },
+            { id: 'rtx-4060ti', name: 'NVIDIA GeForce RTX 4060 Ti', details: { tr: '8GB GDDR6', en: '8GB GDDR6' }, score: 22000 },
+            { id: 'rtx-4070', name: 'NVIDIA GeForce RTX 4070', details: { tr: '12GB GDDR6X', en: '12GB GDDR6X' }, score: 30000 },
+            { id: 'rtx-4070s', name: 'NVIDIA GeForce RTX 4070 SUPER', details: { tr: '12GB GDDR6X', en: '12GB GDDR6X' }, score: 31000 },
+            { id: 'rtx-4070ti', name: 'NVIDIA GeForce RTX 4070 Ti', details: { tr: '12GB GDDR6X', en: '12GB GDDR6X' }, score: 31642 },
+            { id: 'rtx-4070tis', name: 'NVIDIA GeForce RTX 4070 Ti SUPER', details: { tr: '16GB GDDR6X', en: '16GB GDDR6X' }, score: 33000 },
+            { id: 'rtx-4080', name: 'NVIDIA GeForce RTX 4080', details: { tr: '16GB GDDR6X', en: '16GB GDDR6X' }, score: 34440 },
+            { id: 'rtx-4080s', name: 'NVIDIA GeForce RTX 4080 SUPER', details: { tr: '16GB GDDR6X', en: '16GB GDDR6X' }, score: 36000 },
+            { id: 'rtx-4090', name: 'NVIDIA GeForce RTX 4090', details: { tr: '24GB GDDR6X', en: '24GB GDDR6X' }, score: 42000 },
+            { id: 'rtx-5080', name: 'NVIDIA GeForce RTX 5080', details: { tr: '16GB GDDR7 (tahmini)', en: '16GB GDDR7 (estimated)' }, score: 38000 }, // Placeholder for future 2025
+            { id: 'rtx-5090', name: 'NVIDIA GeForce RTX 5090', details: { tr: '24GB GDDR7 (tahmini)', en: '24GB GDDR7 (estimated)' }, score: 45000 }, // Placeholder for future 2025
+
+            // AMD Radeon GPUs (2014-2025) - Expanded list
+            { id: 'r7-260x', name: 'AMD Radeon R7 260X', details: { tr: '2GB GDDR5', en: '2GB GDDR5' }, score: 3000 }, // 2013
+            { id: 'r9-290', name: 'AMD Radeon R9 290', details: { tr: '4GB GDDR5', en: '4GB GDDR5' }, score: 8500 }, // 2013
+            { id: 'r9-290x', name: 'AMD Radeon R9 290X', details: { tr: '4GB GDDR5', en: '4GB GDDR5' }, score: 9500 }, // 2013
+            { id: 'r9-390', name: 'AMD Radeon R9 390', details: { tr: '8GB GDDR5', en: '8GB GDDR5' }, score: 11000 }, // 2015
+            { id: 'r9-390x', name: 'AMD Radeon R9 390X', details: { tr: '8GB GDDR5', en: '8GB GDDR5' }, score: 12000 }, // 2015
+            { id: 'rx-470', name: 'AMD Radeon RX 470', details: { tr: '4GB GDDR5', en: '4GB GDDR5' }, score: 9500 }, // 2016
+            { id: 'rx-480', name: 'AMD Radeon RX 480', details: { tr: '8GB GDDR5', en: '8GB GDDR5' }, score: 10500 }, // 2016
+            { id: 'rx-570', name: 'AMD Radeon RX 570', details: { tr: '8GB GDDR5', en: '8GB GDDR5' }, score: 12000 }, // 2017
+            { id: 'rx-580', name: 'AMD Radeon RX 580', details: { tr: '8GB GDDR5', en: '8GB GDDR5' }, score: 12500 }, // 2017
+            { id: 'rx-590', name: 'AMD Radeon RX 590', details: { tr: '8GB GDDR5', en: '8GB GDDR5' }, score: 13500 }, // 2018
+            { id: 'rx-5500xt', name: 'AMD Radeon RX 5500 XT', details: { tr: '8GB GDDR6', en: '8GB GDDR6' }, score: 10500 }, // 2019
+            { id: 'rx-5600xt', name: 'AMD Radeon RX 5600 XT', details: { tr: '6GB GDDR6', en: '6GB GDDR6' }, score: 14000 }, // 2020
+            { id: 'rx-5700xt', name: 'AMD Radeon RX 5700 XT', details: { tr: '8GB GDDR6', en: '8GB GDDR6' }, score: 17500 }, // 2019
+            { id: 'rx-6600', name: 'AMD Radeon RX 6600', details: { tr: '8GB GDDR6', en: '8GB GDDR6' }, score: 15000 }, // 2021
+            { id: 'rx-6600xt', name: 'AMD Radeon RX 6600 XT', details: { tr: '8GB GDDR6', en: '8GB GDDR6' }, score: 18000 }, // 2021
+            { id: 'rx-6650xt', name: 'AMD Radeon RX 6650 XT', details: { tr: '8GB GDDR6', en: '8GB GDDR6' }, score: 19500 }, // 2022
+            { id: 'rx-6700', name: 'AMD Radeon RX 6700', details: { tr: '10GB GDDR6', en: '10GB GDDR6' }, score: 20000 }, // 2022
+            { id: 'rx-6700xt', name: 'AMD Radeon RX 6700 XT', details: { tr: '12GB GDDR6', en: '12GB GDDR6' }, score: 22000 }, // 2021
+            { id: 'rx-6750xt', name: 'AMD Radeon RX 6750 XT', details: { tr: '12GB GDDR6', en: '12GB GDDR6' }, score: 24000 }, // 2022
+            { id: 'rx-6800', name: 'AMD Radeon RX 6800', details: { tr: '16GB GDDR6', en: '16GB GDDR6' }, score: 26000 }, // 2020
+            { id: 'rx-6800xt', name: 'AMD Radeon RX 6800 XT', details: { tr: '16GB GDDR6', en: '16GB GDDR6' }, score: 29000 }, // 2020
+            { id: 'rx-6900xt', name: 'AMD Radeon RX 6900 XT', details: { tr: '16GB GDDR6', en: '16GB GDDR6' }, score: 32000 }, // 2020
+            { id: 'rx-6950xt', name: 'AMD Radeon RX 6950 XT', details: { tr: '16GB GDDR6', en: '16GB GDDR6' }, score: 33000 }, // 2022
+            { id: 'rx-7600', name: 'AMD Radeon RX 7600', details: { tr: '8GB GDDR6', en: '8GB GDDR6' }, score: 20000 }, // 2023
+            { id: 'rx-7700xt', name: 'AMD Radeon RX 7700 XT', details: { tr: '12GB GDDR6', en: '12GB GDDR6' }, score: 26000 }, // 2023
+            { id: 'rx-7800xt', name: 'AMD Radeon RX 7800 XT', details: { tr: '16GB GDDR6', en: '16GB GDDR6' }, score: 29000 }, // 2023
+            { id: 'rx-7900gre', name: 'AMD Radeon RX 7900 GRE', details: { tr: '16GB GDDR6', en: '16GB GDDR6' }, score: 30500 }, // 2024
+            { id: 'rx-7900xt', name: 'AMD Radeon RX 7900 XT', details: { tr: '20GB GDDR6', en: '20GB GDDR6' }, score: 32000 }, // 2022
+            { id: 'rx-7900xtx', name: 'AMD Radeon RX 7900 XTX', details: { tr: '24GB GDDR6', en: '24GB GDDR6' }, score: 35000 }, // 2022
+            { id: 'rx-8800xt', name: 'AMD Radeon RX 8800 XT (tahmini)', details: { tr: '16GB GDDR7 (tahmini)', en: '16GB GDDR7 (estimated)' }, score: 38000 }, // Placeholder for future 2025
+            { id: 'rx-8900xtx', name: 'AMD Radeon RX 8900 XTX (tahmini)', details: { tr: '32GB GDDR7 (tahmini)', en: '32GB GDDR7 (estimated)' }, score: 45000 }, // Placeholder for future 2025
+
+            // Intel Arc GPUs (Expanded list)
+            { id: 'arc-a310', name: 'Intel Arc A310', details: { tr: '4GB GDDR6', en: '4GB GDDR6' }, score: 5000 }, // 2022
+            { id: 'arc-a380', name: 'Intel Arc A380', details: { tr: '6GB GDDR6', en: '6GB GDDR6' }, score: 7500 }, // 2022
+            { id: 'arc-a580', name: 'Intel Arc A580', details: { tr: '8GB GDDR6', en: '8GB GDDR6' }, score: 11000 }, // 2023
+            { id: 'arc-a750', name: 'Intel Arc A750', details: { tr: '8GB GDDR6', en: '8GB GDDR6' }, score: 14000 }, // 2022
+            { id: 'arc-a770-8gb', name: 'Intel Arc A770 (8GB)', details: { tr: '8GB GDDR6', en: '8GB GDDR6' }, score: 16000 }, // 2022
+            { id: 'arc-a770', name: 'Intel Arc A770 (16GB)', details: { tr: '16GB GDDR6', en: '16GB GDDR6' }, score: 17000 }, // 2022
+            { id: 'arc-b380', name: 'Intel Arc B380 (tahmini)', details: { tr: '6GB GDDR6 (tahmini)', en: '6GB GDDR6 (estimated)' }, score: 8000 }, // Placeholder for future 2025
+            { id: 'arc-b770', name: 'Intel Arc B770 (tahmini)', details: { tr: '16GB GDDR6 (tahmini)', en: '16GB GDDR6 (estimated)' }, score: 18000 }, // Placeholder for future 2025
+        ];
+
+        const ramData = [
+            { id: '8gb-ddr3-1333', name: '8GB DDR3 1333MHz', score: 25 },
+            { id: '16gb-ddr3-1600', name: '16GB DDR3 1600MHz', score: 40 },
+            { id: '8gb-ddr4-2666', name: '8GB DDR4 2666MHz', score: 50 },
+            { id: '16gb-ddr4-3200', name: '16GB DDR4 3200MHz', score: 70 },
+            { id: '32gb-ddr4-3200', name: '32GB DDR4 3200MHz', score: 90 },
+            { id: '32gb-ddr5-6000', name: '32GB DDR5 6000MHz', score: 100 },
+            { id: '64gb-ddr5-6000', name: '64GB DDR5 6000MHz', score: 110 },
+            { id: '128gb-ddr5-6000', name: '128GB DDR5 6000MHz', score: 120 },
+        ];
+
+        const storageData = [
+            { id: '500gb-hdd', name: '500GB HDD', score: 10 },
+            { id: '1tb-hdd', name: '1TB HDD', score: 15 },
+            { id: '2tb-hdd', name: '2TB HDD', score: 20 },
+            { id: '128gb-ssd', name: '128GB SSD', score: 40 },
+            { id: '256gb-ssd', name: '256GB SSD', score: 60 },
+            { id: '500gb-ssd', name: '500GB SSD', score: 85 },
+            { id: '1tb-sata-ssd', name: '1TB SATA SSD', score: 90 },
+            { id: '1tb-nvme', name: '1TB NVMe SSD', score: 100 },
+            { id: '2tb-nvme', name: '2TB NVMe SSD', score: 110 },
+            { id: '4tb-nvme', name: '4TB NVMe SSD', score: 120 },
+        ];
+
+        const psuData = [
+            { id: '400w', name: '400W', score: 45 },
+            { id: '500w', name: '500W', score: 55 },
+            { id: '550w', name: '550W', score: 60 },
+            { id: '600w', name: '600W', score: 65 },
+            { id: '650w', name: '650W', score: 70 },
+            { id: '700w', name: '700W', score: 75 },
+            { id: '750w', name: '750W', score: 80 },
+            { id: '850w', name: '850W', score: 90 },
+            { id: '1000w', name: '1000W', score: 100 },
+            { id: '1200w', name: '1200W', score: 110 },
+            { id: '1500w', name: '1500W', score: 120 },
+        ];
+
+        // Dynamically calculates maximum scores for bar chart scaling
+        const calculateMaxScores = () => {
+            const maxTotalPossibleScore = Math.max(...cpuData.map(c => c.score)) +
+                                       Math.max(...gpuData.map(g => g.score)) +
+                                       Math.max(...ramData.map(r => r.score)) +
+                                       Math.max(...storageData.map(s => s.score)) +
+                                       Math.max(...psuData.map(p => p.score));
+
+            return {
+                cpu: Math.max(...cpuData.map(c => c.score)),
+                gpu: Math.max(...gpuData.map(g => g.score)),
+                ram: Math.max(...ramData.map(r => r.score)),
+                storage: Math.max(...storageData.map(s => s.score)),
+                psu: Math.max(...psuData.map(p => p.score)),
+                total: maxTotalPossibleScore
+            };
+        };
+        const maxScores = calculateMaxScores();
+
+        /**
+         * Updates UI texts based on the selected language.
+         * @param {string} lang - The language code ('tr' or 'en').
+         */
+        function updateUIForLanguage(lang) {
+            const currentTranslations = translations[lang];
+
+            document.getElementById('appTitle').textContent = currentTranslations.appTitle;
+
+            // Update elements with data-key attribute
+            document.querySelectorAll('[data-key]').forEach(element => {
+                const key = element.getAttribute('data-key');
+                if (currentTranslations[key]) {
+                    if (element.tagName === 'INPUT' && element.hasAttribute('placeholder')) {
+                        element.placeholder = currentTranslations[key];
+                    } else {
+                        element.textContent = currentTranslations[key];
+                    }
+                }
             });
 
-            // Add click listener to each card
-            cards.forEach(card => {
-                card.addEventListener("click", () => {
-                    // Get data from clicked card
-                    const model = card.dataset.model;
-                    const vram = card.dataset.vram;
-                    const bus = card.dataset.bus;
-                    const cuda = card.dataset.cuda;
-                    const boostClock = card.dataset.boostClock;
-                    const memorySpeed = card.dataset.memorySpeed;
-                    const tdp = card.dataset.tdp;
+            // Re-populate all dropdowns for all systems to update their options' text
+            Object.values(allSystems).forEach(sys => {
+                populateDropdownsForSystem(sys.id);
+            });
+            updateComparisonSystemSelectors(); // Update the A/B selectors
 
-                    // Populate modal
-                    modalTitle.textContent = model;
-                    modalBody.innerHTML = `
-                        <div class="feature-item">
-                            <span class="feature-icon">&#128187;</span> <!-- Computer emoji -->
-                            <p><strong class="font-semibold">VRAM:</strong> ${vram}</p>
-                        </div>
-                        <div class="feature-item">
-                            <span class="feature-icon">&#128200;</span> <!-- Chart increasing emoji -->
-                            <p><strong class="font-semibold">Veri Yolu Arayüzü:</strong> ${bus}</p>
-                        </div>
-                        <div class="feature-item">
-                            <span class="feature-icon">&#9889;</span> <!-- High voltage sign emoji -->
-                            <p><strong class="font-semibold">CUDA Çekirdekleri:</strong> ${cuda}</p>
-                        </div>
-                        <div class="feature-item">
-                            <span class="feature-icon">&#9200;</span> <!-- Stopwatch emoji -->
-                            <p><strong class="font-semibold">Boost Clock:</strong> ${boostClock}</p>
-                        </div>
-                        <div class="feature-item">
-                            <span class="feature-icon">&#128218;</span> <!-- Book emoji for memory -->
-                            <p><strong class="font-semibold">Bellek Hızı:</strong> ${memorySpeed}</p>
-                        </div>
-                        <div class="feature-item">
-                            <span class="feature-icon">&#128293;</span> <!-- Fire emoji for power -->
-                            <p><strong class="font-semibold">TDP:</strong> ${tdp}</p>
-                        </div>
-                    `;
+            // Update the language toggle dropdown selected value
+            document.getElementById('languageToggle').value = lang;
+        }
 
-                    // Show modal
-                    modal.classList.add("open");
-                });
+        /**
+         * Populates a single dropdown menu with data.
+         * @param {string} selectElementId - The ID of the select element.
+         * @param {Array<Object>} data - The array of data objects (e.g., cpuData).
+         * @param {string} selectedValue - The currently selected value, if any.
+         */
+        function populateSingleDropdown(selectElementId, data, selectedValue = '') {
+            const select = document.getElementById(selectElementId);
+            if (!select) return; // Ensure element exists
+            const currentTranslations = translations[currentLang];
+            select.innerHTML = `<option value="">${currentTranslations.selectOption}</option>`; // Default option
+
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                const itemDetails = item.details ? item.details[currentLang] || item.details.en || item.details.tr : '';
+                option.textContent = `${item.name} ${itemDetails ? `(${itemDetails})` : ''}`;
+                if (item.id === selectedValue) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+        }
+
+        /**
+         * Populates all component dropdowns for a specific system.
+         * @param {string} systemId - The ID of the system (e.g., 'system-A').
+         */
+        function populateDropdownsForSystem(systemId) {
+            populateSingleDropdown(`${systemId}-cpu`, cpuData, allSystems[systemId]?.cpuId);
+            populateSingleDropdown(`${systemId}-gpu`, gpuData, allSystems[systemId]?.gpuId);
+            populateSingleDropdown(`${systemId}-ram`, ramData, allSystems[systemId]?.ramId);
+            populateSingleDropdown(`${systemId}-storage`, storageData, allSystems[systemId]?.storageId);
+            populateSingleDropdown(`${systemId}-psu`, psuData, allSystems[systemId]?.psuId);
+        }
+
+        /**
+         * Filters dropdown options based on search input.
+         * @param {string} selectElementId - The ID of the select element.
+         * @param {string} searchInputId - The ID of the search input element.
+         * @param {Array<Object>} data - The data array (e.g., cpuData).
+         */
+        function filterDropdownOptions(selectElementId, searchInputId, data) {
+            const select = document.getElementById(selectElementId);
+            const searchInput = document.getElementById(searchInputId);
+            if (!select || !searchInput) return;
+
+            const searchTerm = searchInput.value.toLowerCase();
+            const currentTranslations = translations[currentLang];
+
+            // Store current selected value before clearing
+            const currentSelectedValue = select.value;
+
+            // Clear existing options
+            select.innerHTML = `<option value="">${currentTranslations.selectOption}</option>`;
+
+            let firstMatchValue = null;
+            let foundSelectedValue = false;
+
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                const itemDetails = item.details ? item.details[currentLang] || item.details.en || item.details.tr : '';
+                option.textContent = `${item.name} ${itemDetails ? `(${itemDetails})` : ''}`;
+                const fullText = option.textContent.toLowerCase(); // Use rendered text for search matching
+
+                if (fullText.includes(searchTerm)) {
+                    select.appendChild(option);
+
+                    if (firstMatchValue === null) {
+                        firstMatchValue = item.id;
+                    }
+                    if (item.id === currentSelectedValue) {
+                        foundSelectedValue = true;
+                    }
+                }
             });
 
-            // Close modal functions
-            function closeCardModal() {
-                modal.classList.remove("open");
+            // Restore selection or select first match/default
+            if (foundSelectedValue) {
+                select.value = currentSelectedValue;
+            } else if (searchTerm !== "" && firstMatchValue !== null && select.options.length > 1) { // Only auto-select if there's more than just the default option
+                 select.value = firstMatchValue;
+                 // Manually trigger change to update the allSystems object
+                 const changeEvent = new Event('change');
+                 select.dispatchEvent(changeEvent);
+            } else {
+                select.value = ""; // Default to "-- Select --"
+                // Manually trigger change to clear the allSystems object entry if the search makes selection invalid
+                const changeEvent = new Event('change');
+                select.dispatchEvent(changeEvent);
+            }
+        }
+
+        /**
+         * Calculates bottleneck percentage and provides an explanation.
+         * @param {number} cpuScore - The CPU score.
+         * @param {number} gpuScore - The GPU score.
+         * @returns {Object} - An object containing percentage and explanation.
+         */
+        const calculateBottleneck = (cpuScore, gpuScore) => {
+            const currentTranslations = translations[currentLang];
+            if (!cpuScore || !gpuScore) {
+                return { percentage: null, explanation: currentTranslations.errorMessageTwoSystems }; // Use specific error message
             }
 
-            // Close modal when close button is clicked
-            closeModalBtn.addEventListener("click", closeCardModal);
+            const diff = Math.abs(cpuScore - gpuScore);
+            const maxVal = Math.max(cpuScore, gpuScore);
 
-            // Close modal when clicking outside the content
-            modal.addEventListener("click", (event) => {
-                if (event.target === modal) {
-                    closeCardModal();
+            if (maxVal === 0) {
+                return { percentage: 0, explanation: currentTranslations.bottleneckExplanation0 };
+            }
+
+            const percentage = (diff / maxVal) * 100;
+            let explanation = "";
+            let bottleneckComponent = "";
+
+            if (cpuScore < gpuScore) {
+                bottleneckComponent = currentTranslations.processor;
+            } else if (gpuScore < cpuScore) {
+                bottleneckComponent = currentTranslations.graphicsCard;
+            } else {
+                bottleneckComponent = currentTranslations.balanced;
+            }
+
+            if (percentage < 5) {
+                explanation = currentTranslations.bottleneckExplanation0;
+            } else if (percentage < 15) {
+                explanation = currentTranslations.bottleneckExplanation1;
+            } else if (percentage < 25) {
+                explanation = currentTranslations.bottleneckExplanation2;
+            } else {
+                explanation = currentTranslations.bottleneckExplanation3.replace('${component}', bottleneckComponent);
+            }
+
+            return {
+                percentage: percentage.toFixed(1),
+                explanation: `${bottleneckComponent} ${currentTranslations.bottleneckSuffix}: ${explanation}`,
+            };
+        };
+
+        /**
+         * Creates or updates a vertical bar chart for comparison.
+         * This function can render bars for multiple systems.
+         * @param {HTMLElement} containerElement - The div element that contains the bars.
+         * @param {Array<Object>} systems - An array of system objects to compare.
+         * @param {string} componentType - The type of component ('cpu', 'gpu', 'ram', 'storage', 'psu', 'total').
+         * @param {number} maxScore - The maximum possible score for scaling.
+         */
+        function renderMultiSystemBars(containerElement, systems, componentType, maxScore) {
+            if (!containerElement) {
+                console.error(`Error: Container element not found for type ${componentType}.`);
+                return;
+            }
+
+            let barsHtml = '';
+            systems.forEach((sys, index) => {
+                let score = 0;
+                let componentName = '';
+
+                switch (componentType) {
+                    case 'cpu':
+                        const cpu = cpuData.find(c => c.id === sys.cpuId);
+                        score = cpu ? cpu.score : 0;
+                        componentName = cpu ? cpu.name : translations[currentLang].selectOption;
+                        break;
+                    case 'gpu':
+                        const gpu = gpuData.find(g => g.id === sys.gpuId);
+                        score = gpu ? gpu.score : 0;
+                        componentName = gpu ? gpu.name : translations[currentLang].selectOption;
+                        break;
+                    case 'ram':
+                        const ram = ramData.find(r => r.id === sys.ramId);
+                        score = ram ? ram.score : 0;
+                        componentName = ram ? ram.name : translations[currentLang].selectOption;
+                        break;
+                    case 'storage':
+                        const storage = storageData.find(s => s.id === sys.storageId);
+                        score = storage ? storage.score : 0;
+                        componentName = storage ? storage.name : translations[currentLang].selectOption;
+                        break;
+                    case 'psu':
+                        const psu = psuData.find(p => p.id === sys.psuId);
+                        score = psu ? psu.score : 0;
+                        componentName = psu ? psu.name : translations[currentLang].selectOption;
+                        break;
+                    case 'total':
+                        const totalCpu = cpuData.find(c => c.id === sys.cpuId);
+                        const totalGpu = gpuData.find(g => g.id === sys.gpuId);
+                        const totalRam = ramData.find(r => r.id === sys.ramId);
+                        const totalStorage = storageData.find(s => s.id === sys.storageId);
+                        const totalPsu = psuData.find(p => p.id === sys.psuId);
+                        score = (totalCpu?.score || 0) + (totalGpu?.score || 0) + (totalRam?.score || 0) + (totalStorage?.score || 0) + (totalPsu?.score || 0);
+                        componentName = sys.name; // For total score, label is system name
+                        break;
+                    default:
+                        break;
+                }
+
+                const barColorClass = (index % 2 === 0) ? 'bar-color-odd' : 'bar-color-even';
+                const adjustedHeight = maxScore > 0 ? Math.min((score / maxScore) * 100, 100) : 0;
+
+                barsHtml += `
+                    <div class="bar-item">
+                        <div class="bar ${barColorClass}" style="height: ${adjustedHeight}%;">
+                            <span>${score.toLocaleString()}</span>
+                        </div>
+                        <span class="bar-label">${sys.name}</span>
+                    </div>
+                `;
+            });
+            containerElement.innerHTML = barsHtml;
+        }
+
+        /**
+         * Creates and appends a new system input panel to the UI.
+         * @param {number} systemIndex - The index of the system (e.g., 1 for System A, 2 for System B).
+         */
+        function createSystemPanel(systemIndex) {
+            const systemLetters = ['A', 'B', 'C', 'D', 'E'];
+            const displayLetter = systemLetters[systemIndex - 1];
+            const newSystemId = `system-${displayLetter}`;
+            const systemName = `${translations[currentLang].systemPlaceholder} ${displayLetter}`;
+
+            const systemInputsContainer = document.getElementById('systemInputsContainer');
+            const newSystemPanel = document.createElement('div');
+            // Alternate background colors for new panels
+            newSystemPanel.className = `p-6 rounded-lg shadow-md system-input-group ${systemIndex % 2 === 0 ? 'even-system' : 'system-panel'}`;
+            newSystemPanel.setAttribute('data-system-id', newSystemId);
+
+            newSystemPanel.innerHTML = `
+                <h2 class="text-2xl font-bold ${systemIndex % 2 === 0 ? 'text-emerald-700' : 'text-indigo-700'} mb-4" data-system-name-display>${systemName}</h2>
+                <div class="mb-4">
+                    <label for="${newSystemId}-name" class="block text-md font-medium text-gray-700 mb-1" data-key="systemNameLabel">${translations[currentLang].systemNameLabel}</label>
+                    <input type="text" id="${newSystemId}-name" placeholder="${systemName}" class="system-name-input block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-md mb-2">
+                </div>
+                <div class="mb-4">
+                    <label for="${newSystemId}-cpu-search" class="block text-md font-medium text-gray-700 mb-1" data-key="cpuSearchLabel">${translations[currentLang].cpuSearchLabel}</label>
+                    <input type="text" id="${newSystemId}-cpu-search" placeholder="${translations[currentLang].cpuSearchPlaceholder}" class="system-cpu-search block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-md mb-2">
+                    <label for="${newSystemId}-cpu" class="block text-md font-medium text-gray-700 mb-1" data-key="cpuLabel">${translations[currentLang].cpuLabel}</label>
+                    <select id="${newSystemId}-cpu" class="system-cpu-select block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-md rounded-md shadow-sm"></select>
+                </div>
+                <div class="mb-4">
+                    <label for="${newSystemId}-gpu-search" class="block text-md font-medium text-gray-700 mb-1" data-key="gpuSearchLabel">${translations[currentLang].gpuSearchLabel}</label>
+                    <input type="text" id="${newSystemId}-gpu-search" placeholder="${translations[currentLang].gpuSearchPlaceholder}" class="system-gpu-search block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-md mb-2">
+                    <label for="${newSystemId}-gpu" class="block text-md font-medium text-gray-700 mb-1" data-key="gpuLabel">${translations[currentLang].gpuLabel}</label>
+                    <select id="${newSystemId}-gpu" class="system-gpu-select block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-md rounded-md shadow-sm"></select>
+                </div>
+                <div class="mb-4">
+                    <label for="${newSystemId}-ram" class="block text-md font-medium text-gray-700 mb-1" data-key="ramLabel">${translations[currentLang].ramLabel}</label>
+                    <select id="${newSystemId}-ram" class="system-ram-select block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-md rounded-md shadow-sm"></select>
+                </div>
+                <div class="mb-4">
+                    <label for="${newSystemId}-storage" class="block text-md font-medium text-gray-700 mb-1" data-key="storageLabel">${translations[currentLang].storageLabel}</label>
+                    <select id="${newSystemId}-storage" class="system-storage-select block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-md rounded-md shadow-sm"></select>
+                </div>
+                <div class="mb-4">
+                    <label for="${newSystemId}-psu" class="block text-md font-medium text-gray-700 mb-1" data-key="psuLabel">${translations[currentLang].psuLabel}</label>
+                    <select id="${newSystemId}-psu" class="system-psu-select block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-md rounded-md shadow-sm"></select>
+                </div>
+            `;
+            systemInputsContainer.appendChild(newSystemPanel);
+
+            // Add new system to our global storage
+            allSystems[newSystemId] = {
+                id: newSystemId,
+                name: systemName,
+                cpuId: '', gpuId: '', ramId: '', storageId: '', psuId: ''
+            };
+
+            // Populate dropdowns for the new system
+            populateDropdownsForSystem(newSystemId);
+            attachSystemEventListeners(newSystemId);
+        }
+
+
+        /**
+         * Attaches event listeners to dynamically created system input elements.
+         * @param {string} systemId - The ID of the system.
+         */
+        function attachSystemEventListeners(systemId) {
+            const systemPanel = document.querySelector(`[data-system-id="${systemId}"]`);
+            if (!systemPanel) return;
+
+            // Name input updates system name in dropdowns
+            systemPanel.querySelector(`#${systemId}-name`).addEventListener('input', (event) => {
+                const displayLetter = systemId.split('-')[1]; // Get 'A', 'B', etc.
+                allSystems[systemId].name = event.target.value.trim() || `${translations[currentLang].systemPlaceholder} ${displayLetter}`;
+                systemPanel.querySelector(`[data-system-name-display]`).textContent = allSystems[systemId].name; // Update panel title
+                updateComparisonSystemSelectors(); // Update comparison dropdowns
+                document.getElementById('comparisonResults').classList.add('hidden');
+                document.getElementById('allSystemsComparisonResults').classList.add('hidden');
+                document.getElementById('errorMessage').classList.add('hidden');
+            });
+
+            // Component selection updates system object and hides results
+            systemPanel.querySelector(`#${systemId}-cpu`).addEventListener('change', (event) => {
+                allSystems[systemId].cpuId = event.target.value;
+                console.log(`System ${systemId} CPU updated:`, allSystems[systemId].cpuId); // Debug log
+                document.getElementById('comparisonResults').classList.add('hidden');
+                document.getElementById('allSystemsComparisonResults').classList.add('hidden');
+                document.getElementById('errorMessage').classList.add('hidden');
+            });
+            systemPanel.querySelector(`#${systemId}-gpu`).addEventListener('change', (event) => {
+                allSystems[systemId].gpuId = event.target.value;
+                console.log(`System ${systemId} GPU updated:`, allSystems[systemId].gpuId); // Debug log
+                document.getElementById('comparisonResults').classList.add('hidden');
+                document.getElementById('allSystemsComparisonResults').classList.add('hidden');
+                document.getElementById('errorMessage').classList.add('hidden');
+            });
+            systemPanel.querySelector(`#${systemId}-ram`).addEventListener('change', (event) => {
+                allSystems[systemId].ramId = event.target.value;
+                document.getElementById('comparisonResults').classList.add('hidden');
+                document.getElementById('allSystemsComparisonResults').classList.add('hidden');
+                document.getElementById('errorMessage').classList.add('hidden');
+            });
+            systemPanel.querySelector(`#${systemId}-storage`).addEventListener('change', (event) => {
+                allSystems[systemId].storageId = event.target.value;
+                document.getElementById('comparisonResults').classList.add('hidden');
+                document.getElementById('allSystemsComparisonResults').classList.add('hidden');
+                document.getElementById('errorMessage').classList.add('hidden');
+            });
+            systemPanel.querySelector(`#${systemId}-psu`).addEventListener('change', (event) => {
+                allSystems[systemId].psuId = event.target.value;
+                document.getElementById('comparisonResults').classList.add('hidden');
+                document.getElementById('allSystemsComparisonResults').classList.add('hidden');
+                document.getElementById('errorMessage').classList.add('hidden');
+            });
+
+            // Search input listeners
+            systemPanel.querySelector(`#${systemId}-cpu-search`).addEventListener('input', () => filterDropdownOptions(`${systemId}-cpu`, `${systemId}-cpu-search`, cpuData));
+            systemPanel.querySelector(`#${systemId}-gpu-search`).addEventListener('input', () => filterDropdownOptions(`${systemId}-gpu`, `${systemId}-gpu-search`, gpuData));
+        }
+
+        /**
+         * Populates the "System A" and "System B" dropdowns with available systems.
+         */
+        function updateComparisonSystemSelectors() {
+            const compareSystemA = document.getElementById('compareSystemA');
+            const compareSystemB = document.getElementById('compareSystemB');
+            const currentTranslations = translations[currentLang];
+
+            // Store current selections
+            const selectedA = compareSystemA.value;
+            const selectedB = compareSystemB.value;
+
+            compareSystemA.innerHTML = '';
+            compareSystemB.innerHTML = '';
+
+            const systemIds = Object.keys(allSystems);
+
+            // Add default "Select" option for A and B
+            compareSystemA.innerHTML = `<option value="">${currentTranslations.selectOption}</option>`;
+            compareSystemB.innerHTML = `<option value="">${currentTranslations.selectOption}</option>`;
+
+
+            systemIds.forEach(id => {
+                const system = allSystems[id];
+                const optionA = document.createElement('option');
+                optionA.value = system.id;
+                optionA.textContent = system.name; // Use the system's name
+                compareSystemA.appendChild(optionA);
+
+                const optionB = document.createElement('option');
+                optionB.value = system.id;
+                optionB.textContent = system.name; // Use the system's name
+                compareSystemB.appendChild(optionB);
+            });
+
+            // Restore previous selections or set defaults
+            if (systemIds.includes(selectedA)) {
+                compareSystemA.value = selectedA;
+            } else if (systemIds.length >= 1) {
+                compareSystemA.value = systemIds[0]; // Default to System A
+            } else {
+                 compareSystemA.value = '';
+            }
+
+            if (systemIds.includes(selectedB)) {
+                compareSystemB.value = selectedB;
+            } else if (systemIds.length >= 2) {
+                // Find a default for System B that is not the same as System A, if possible
+                const defaultBIndex = systemIds.indexOf(compareSystemA.value) === 0 && systemIds.length > 1 ? 1 : 0;
+                compareSystemB.value = systemIds[defaultBIndex];
+            } else {
+                 compareSystemB.value = ''; // Otherwise, default to no selection
+            }
+        }
+
+
+        // Event listeners when the document is fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize 5 system panels (System A to System E)
+            for (let i = 1; i <= 5; i++) {
+                createSystemPanel(i);
+            }
+
+            // Set initial language and theme
+            updateUIForLanguage(currentLang);
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+
+            // Listen for changes on comparison system selectors
+            document.getElementById('compareSystemA').addEventListener('change', () => {
+                document.getElementById('comparisonResults').classList.add('hidden');
+                document.getElementById('allSystemsComparisonResults').classList.add('hidden');
+                document.getElementById('errorMessage').classList.add('hidden');
+            });
+            document.getElementById('compareSystemB').addEventListener('change', () => {
+                document.getElementById('comparisonResults').classList.add('hidden');
+                document.getElementById('allSystemsComparisonResults').classList.add('hidden');
+                document.getElementById('errorMessage').classList.add('hidden');
+            });
+
+            // Theme toggle button
+            const themeToggleBtn = document.getElementById('themeToggle');
+            themeToggleBtn.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                if (document.body.classList.contains('dark-mode')) {
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    localStorage.setItem('theme', 'light');
                 }
             });
 
-            // Close modal when Escape key is pressed
-            document.addEventListener("keydown", (event) => {
-                if (event.key === "Escape" && modal.classList.contains("open")) {
-                    closeCardModal();
+            // Language toggle dropdown
+            const languageToggle = document.getElementById('languageToggle');
+            languageToggle.addEventListener('change', (event) => {
+                currentLang = event.target.value;
+                localStorage.setItem('language', currentLang);
+                updateUIForLanguage(currentLang);
+                // Re-run comparison if results are visible
+                if (!document.getElementById('comparisonResults').classList.contains('hidden')) {
+                     document.getElementById('compareButton').click();
+                } else if (!document.getElementById('allSystemsComparisonResults').classList.contains('hidden')) {
+                    document.getElementById('compareAllSystemsButton').click();
                 }
             });
+
+            // Initial population of comparison selectors
+            updateComparisonSystemSelectors();
+        });
+
+        // Compare Selected Systems button click event listener
+        document.getElementById('compareButton').addEventListener('click', () => {
+            const systemAId = document.getElementById('compareSystemA').value;
+            const systemBId = document.getElementById('compareSystemB').value;
+
+            console.log("Compare Selected Systems clicked!"); // Debug log
+            console.log("Selected System A ID:", systemAId); // Debug log
+            console.log("Selected System B ID:", systemBId); // Debug log
+
+            const systemA = allSystems[systemAId];
+            const systemB = allSystems[systemBId];
+
+            console.log("System A object:", systemA); // Debug log
+            console.log("System B object:", systemB); // Debug log
+
+
+            const errorMessageElement = document.getElementById('errorMessage');
+            const comparisonResultsElement = document.getElementById('comparisonResults');
+            const allSystemsComparisonResultsElement = document.getElementById('allSystemsComparisonResults');
+            const currentTranslations = translations[currentLang];
+
+            // Hide "all systems" results first
+            allSystemsComparisonResultsElement.classList.add('hidden');
+
+            if (!systemA || !systemB || !systemA.cpuId || !systemA.gpuId || !systemB.cpuId || !systemB.gpuId) {
+                errorMessageElement.textContent = currentTranslations.errorMessageTwoSystems; // Specific message for 2 systems
+                errorMessageElement.classList.remove('hidden');
+                comparisonResultsElement.classList.add('hidden');
+                return;
+            } else {
+                errorMessageElement.classList.add('hidden');
+                comparisonResultsElement.classList.remove('hidden');
+                comparisonResultsElement.style.animation = 'none';
+                void comparisonResultsElement.offsetWidth;
+                comparisonResultsElement.style.animation = null;
+            }
+
+            const s1Cpu = cpuData.find(c => c.id === systemA.cpuId);
+            const s1Gpu = gpuData.find(g => g.id === systemA.gpuId);
+            const s1Ram = ramData.find(r => r.id === systemA.ramId);
+            const s1Storage = storageData.find(s => s.id === systemA.storageId);
+            const s1Psu = psuData.find(p => p.id === systemA.psuId);
+
+            const s2Cpu = cpuData.find(c => c.id === systemB.cpuId);
+            const s2Gpu = gpuData.find(g => g.id === systemB.gpuId);
+            const s2Ram = ramData.find(r => r.id === systemB.ramId);
+            const s2Storage = storageData.find(s => s.id === systemB.storageId);
+            const s2Psu = psuData.find(p => p.id === systemB.psuId);
+
+            // Update comparison title
+            document.getElementById('comparisonTitle').textContent = `${systemA.name} vs ${systemB.name} ${currentTranslations.comparisonTitleSuffix}`;
+
+            // Update general info sections
+            document.getElementById('system1Info').innerHTML = `
+                <h3 class="text-xl font-bold text-indigo-700 mb-4">${systemA.name} ${currentTranslations.infoSystemSuffix}</h3>
+                <p class="text-gray-700"><span class="font-semibold">${currentTranslations.cpuLabel}</span> ${s1Cpu ? s1Cpu.name : currentTranslations.selectOption} ${s1Cpu && s1Cpu.details[currentLang] ? `(${s1Cpu.details[currentLang]})` : ''}</p>
+                <p class="text-gray-700"><span class="font-semibold">${currentTranslations.gpuLabel}</span> ${s1Gpu ? s1Gpu.name : currentTranslations.selectOption} ${s1Gpu && s1Gpu.details[currentLang] ? `(${s1Gpu.details[currentLang]})` : ''}</p>
+                <p class="text-gray-700"><span class="font-semibold">${currentTranslations.ramLabel}</span> ${s1Ram ? s1Ram.name : currentTranslations.selectOption}</p>
+                <p class="text-gray-700"><span class="font-semibold">${currentTranslations.storageLabel}</span> ${s1Storage ? s1Storage.name : currentTranslations.selectOption}</p>
+                <p class="text-gray-700"><span class="font-semibold">${currentTranslations.psuLabel}</span> ${s1Psu ? s1Psu.name : currentTranslations.selectOption}</p>
+            `;
+            document.getElementById('system2Info').innerHTML = `
+                <h3 class="text-xl font-bold text-emerald-700 mb-4">${systemB.name} ${currentTranslations.infoSystemSuffix}</h3>
+                <p class="text-gray-700"><span class="font-semibold">${currentTranslations.cpuLabel}</span> ${s2Cpu ? s2Cpu.name : currentTranslations.selectOption} ${s2Cpu && s2Cpu.details[currentLang] ? `(${s2Cpu.details[currentLang]})` : ''}</p>
+                <p class="text-gray-700"><span class="font-semibold">${currentTranslations.gpuLabel}</span> ${s2Gpu ? s2Gpu.name : currentTranslations.selectOption} ${s2Gpu && s2Gpu.details[currentLang] ? `(${s2Gpu.details[currentLang]})` : ''}</p>
+                <p class="text-gray-700"><span class="font-semibold">${currentTranslations.ramLabel}</span> ${s2Ram ? s2Ram.name : currentTranslations.selectOption}</p>
+                <p class="text-gray-700"><span class="font-semibold">${currentTranslations.storageLabel}</span> ${s2Storage ? s2Storage.name : currentTranslations.selectOption}</p>
+                <p class="text-gray-700"><span class="font-semibold">${currentTranslations.psuLabel}</span> ${s2Psu ? s2Psu.name : currentTranslations.selectOption}</p>
+            `;
+
+            // Dynamic rendering for Total Scores and Component Scores
+            const comparisonSections = [
+                { id: 'totalScoreComparisonBar', type: 'total', titleKey: 'totalScoreComparison' },
+                { id: 'cpuComparisonBar', type: 'cpu', titleKey: 'cpuPerformance' },
+                { id: 'gpuComparisonBar', type: 'gpu', titleKey: 'gpuPerformance' },
+                { id: 'ramComparisonBar', type: 'ram', titleKey: 'ramPerformance' },
+                { id: 'storageComparisonBar', type: 'storage', titleKey: 'storagePerformance' },
+                { id: 'psuComparisonBar', type: 'psu', titleKey: 'psuSufficiency' },
+            ];
+
+            comparisonSections.forEach(section => {
+                const sectionElement = document.getElementById(section.id);
+                if (sectionElement) {
+                    // Clear existing content and add the H3 title and the bar-chart-container div
+                    sectionElement.innerHTML = `
+                        <h3 class="text-lg font-semibold text-gray-700 mb-2 text-center" data-key="${section.titleKey}">${currentTranslations[section.titleKey]}</h3>
+                        <div class="bar-chart-container" id="${section.id}InnerContainer"></div>
+                    `;
+                    const innerContainer = document.getElementById(`${section.id}InnerContainer`);
+                    if (innerContainer) {
+                        // Pass the actual inner container element to renderMultiSystemBars
+                        renderMultiSystemBars(innerContainer, [
+                            { id: systemA.id, name: systemA.name, cpuId: systemA.cpuId, gpuId: systemA.gpuId, ramId: systemA.ramId, storageId: systemA.storageId, psuId: systemA.psuId },
+                            { id: systemB.id, name: systemB.name, cpuId: systemB.cpuId, gpuId: systemB.gpuId, ramId: systemB.ramId, storageId: systemB.storageId, psuId: systemB.psuId }
+                        ], section.type, maxScores[section.type]);
+                    }
+                }
+            });
+
+            // Update Bottleneck Analysis (remains the same)
+            const s1Bottleneck = calculateBottleneck(s1Cpu ? s1Cpu.score : 0, s1Gpu ? s1Gpu.score : 0);
+            const s2Bottleneck = calculateBottleneck(s2Cpu ? s2Cpu.score : 0, s2Gpu ? s2Gpu.score : 0);
+            document.getElementById('bottleneckAnalysis').innerHTML = `
+                <h3 class="text-xl font-semibold mb-3">${currentTranslations.bottleneckAnalysis}</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="font-bold text-lg mb-1">${systemA.name} ${currentTranslations.bottleneckSuffix}</p>
+                        <p class="text-2xl font-bold text-purple-700">${s1Bottleneck.percentage}%</p>
+                        <p class="text-md">${s1Bottleneck.explanation}</p>
+                    </div>
+                    <div>
+                        <p class="font-bold text-lg mb-1">${systemB.name} ${currentTranslations.bottleneckSuffix}</p>
+                        <p class="text-2xl font-bold text-purple-700">${s2Bottleneck.percentage}%</p>
+                        <p class="text-md">${s2Bottleneck.explanation}</p>
+                    </div>
+                </div>
+            `;
+        });
+
+        // Compare All Systems button click event listener
+        document.getElementById('compareAllSystemsButton').addEventListener('click', () => {
+            console.log("Compare All Systems clicked!"); // Debug log
+            console.log("All Systems object:", allSystems); // Debug log
+
+            const systemsArray = Object.values(allSystems);
+            const errorMessageElement = document.getElementById('errorMessage');
+            const comparisonResultsElement = document.getElementById('comparisonResults');
+            const allSystemsComparisonResultsElement = document.getElementById('allSystemsComparisonResults');
+            const currentTranslations = translations[currentLang];
+
+            // Filter for only valid systems (CPU and GPU selected)
+            const validSystems = systemsArray.filter(sys => sys.cpuId && sys.gpuId);
+
+            if (validSystems.length < 1) {
+                errorMessageElement.textContent = currentTranslations.errorMessageAllSystems; // Specific message for all systems
+                errorMessageElement.classList.remove('hidden');
+                comparisonResultsElement.classList.add('hidden');
+                allSystemsComparisonResultsElement.classList.add('hidden');
+                return;
+            } else {
+                errorMessageElement.classList.add('hidden');
+                comparisonResultsElement.classList.add('hidden'); // Hide A vs B results
+                allSystemsComparisonResultsElement.classList.remove('hidden'); // Show all systems results
+                allSystemsComparisonResultsElement.style.animation = 'none';
+                void allSystemsComparisonResultsElement.offsetWidth;
+                allSystemsComparisonResultsElement.style.animation = null;
+            }
+
+            // Render bars for all VALID systems
+            renderMultiSystemBars(document.getElementById('allTotalBarContainer'), validSystems, 'total', maxScores.total);
+            renderMultiSystemBars(document.getElementById('allCpuBarContainer'), validSystems, 'cpu', maxScores.cpu);
+            renderMultiSystemBars(document.getElementById('allGpuBarContainer'), validSystems, 'gpu', maxScores.gpu);
+            renderMultiSystemBars(document.getElementById('allRamBarContainer'), validSystems, 'ram', maxScores.ram);
+            renderMultiSystemBars(document.getElementById('allStorageBarContainer'), validSystems, 'storage', maxScores.storage);
+            renderMultiSystemBars(document.getElementById('allPsuBarContainer'), validSystems, 'psu', maxScores.psu);
         });
     </script>
 </body>
