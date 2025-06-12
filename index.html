@@ -1,163 +1,463 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <title>GPT'nin RTX Galerisi</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #0d0d0d;
-      color: #00ffcc;
-    }
-    h1 {
-      text-align: center;
-      padding: 20px;
-      font-size: 2rem;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 20px;
-      padding: 20px;
-      max-width: 1000px;
-      margin: auto;
-    }
-    .card {
-      background: #1a1a1a;
-      padding: 20px;
-      border-radius: 15px;
-      text-align: center;
-      cursor: pointer;
-      transition: 0.3s ease;
-    }
-    .card:hover {
-      transform: scale(1.05);
-      background-color: #222;
-    }
-
-    /* MODAL */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.9);
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      z-index: 9999;
-    }
-
-    .modal-content {
-      background-color: #111;
-      border-radius: 20px;
-      padding: 20px;
-      max-width: 90%;
-      max-height: 90%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    #viewer {
-      width: 100%;
-      height: 300px;
-    }
-
-    .info {
-      margin-top: 20px;
-      text-align: center;
-    }
-
-    .close-btn {
-      position: absolute;
-      top: 20px;
-      right: 30px;
-      font-size: 2rem;
-      color: #fff;
-      cursor: pointer;
-    }
-
-    @media (max-width: 600px) {
-      .card { font-size: 1rem; }
-    }
-  </style>
-</head>
-<body>
-  <h1>GPT'nin RTX Galerisi</h1>
-  <div class="grid">
-    <div class="card" onclick="openModal('RTX 4090')">RTX 4090</div>
-    <div class="card" onclick="openModal('RTX 4080')">RTX 4080</div>
-    <div class="card" onclick="openModal('RTX 4070')">RTX 4070</div>
-    <div class="card" onclick="openModal('RTX 3090')">RTX 3090</div>
-    <div class="card" onclick="openModal('RTX 3080')">RTX 3080</div>
-  </div>
-
-  <!-- MODAL -->
-  <div class="modal" id="modal">
-    <span class="close-btn" onclick="closeModal()">&times;</span>
-    <div class="modal-content">
-      <div id="viewer"></div>
-      <div class="info" id="infoBox">
-        <h2 id="gpuName"></h2>
-        <p>VRAM: 24 GB GDDR6X</p>
-        <p>CUDA Cores: 16384</p>
-        <p>Ray Tracing & DLSS destekli</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Three.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/examples/js/loaders/GLTFLoader.js"></script>
-  <script>
-    const modal = document.getElementById("modal");
-    const viewer = document.getElementById("viewer");
-    const gpuNameEl = document.getElementById("gpuName");
-
-    function openModal(gpuName) {
-      modal.style.display = "flex";
-      gpuNameEl.textContent = gpuName;
-
-      initViewer(); // Load 3D model
-    }
-
-    function closeModal() {
-      modal.style.display = "none";
-      viewer.innerHTML = "";
-    }
-
-    function initViewer() {
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(45, viewer.clientWidth / viewer.clientHeight, 0.1, 1000);
-      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setSize(viewer.clientWidth, viewer.clientHeight);
-      viewer.appendChild(renderer.domElement);
-
-      const light = new THREE.HemisphereLight(0xffffff, 0x444444);
-      light.position.set(0, 200, 0);
-      scene.add(light);
-
-      const loader = new THREE.GLTFLoader();
-      loader.load('https://modelviewer.dev/shared-assets/models/Astronaut.glb', function(gltf) {
-        const model = gltf.scene;
-        model.scale.set(5, 5, 5);
-        scene.add(model);
-
-        let angle = 0;
-        function animate() {
-          requestAnimationFrame(animate);
-          angle += 0.01;
-          model.rotation.y = angle;
-          renderer.render(scene, camera);
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTX Ekran Kartları Listesi</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Custom CSS for animations and font */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0f2f5 0%, #e0e6ec 100%); /* Subtle gradient background */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: #333;
+            overflow-x: hidden; /* Prevent horizontal scroll on some animations */
         }
-        animate();
-      });
+        .container {
+            max-width: 1400px; /* Wider container */
+            width: 100%;
+        }
 
-      camera.position.z = 10;
-    }
-  </script>
+        .header-title {
+            animation: pulse-grow 2s infinite ease-in-out;
+            color: #1a202c; /* Deeper gray for title */
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.05);
+        }
+
+        @keyframes pulse-grow {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .card {
+            opacity: 0;
+            transform: translateY(30px) scale(0.95); /* Slightly more pronounced initial state */
+            transition: opacity 0.7s ease-out, transform 0.7s ease-out, box-shadow 0.3s ease-in-out, border 0.3s ease-in-out;
+            cursor: pointer;
+            border: 2px solid transparent; /* Border for hover effect */
+        }
+        .card.fade-in {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        .card:hover {
+            transform: translateY(-8px) scale(1.03); /* More lift on hover */
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); /* Stronger shadow */
+            border-color: #4F46E5; /* Highlight border on hover */
+        }
+        .card img {
+            transition: transform 0.3s ease-in-out;
+        }
+        .card:hover img {
+            transform: scale(1.05); /* Image zoom on hover */
+        }
+
+        /* Modal specific styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8); /* Darker overlay */
+            backdrop-filter: blur(5px); /* Blurred background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease-out, visibility 0.4s ease-out;
+        }
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: linear-gradient(180deg, #ffffff 0%, #f9f9fb 100%); /* Subtle gradient for modal */
+            border-radius: 1.5rem; /* More rounded */
+            padding: 2.5rem; /* Increased padding */
+            max-width: 90%;
+            width: 700px; /* Slightly wider modal */
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            transform: translateY(-50px) scale(0.8); /* Stronger initial modal animation */
+            opacity: 0;
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.4s ease-out; /* Bounce effect */
+            position: relative;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        .modal-overlay.open .modal-content {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+        .close-button {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            background: #ef4444; /* Red close button */
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .close-button:hover {
+            background-color: #dc2626;
+            transform: rotate(90deg); /* Rotate on hover */
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            background-color: #f7f7f7;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+            transition: background-color 0.2s ease-in-out;
+        }
+        .feature-item:hover {
+            background-color: #f0f0f0;
+        }
+        .feature-icon {
+            margin-right: 0.75rem;
+            color: #4F46E5; /* Primary color */
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <div class="container text-center mb-12 mt-8">
+        <h1 class="text-5xl sm:text-6xl font-extrabold header-title mb-4">RTX Ekran Kartları</h1>
+        <p class="text-xl text-gray-700 max-w-2xl mx-auto">NVIDIA'nın en yeni ve güçlü RTX serisi ekran kartlarının detaylı özelliklerine göz atın.</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 w-full px-4 sm:px-0">
+        <!-- RTX 2000 Series Cards -->
+        <div class="card bg-white rounded-2xl shadow-xl p-6 transform transition-all duration-300 ease-in-out"
+            data-model="NVIDIA GeForce RTX 2060"
+            data-vram="6GB GDDR6"
+            data-bus="PCIe 3.0 x16"
+            data-cuda="1920"
+            data-boost-clock="1.68 GHz"
+            data-memory-speed="14 Gbps"
+            data-tdp="160W">
+            <img src="https://placehold.co/300x200/3B82F6/FFFFFF?text=RTX+2060" alt="RTX 2060 Görseli" class="w-full h-40 object-cover rounded-xl mb-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/300x200/9CA3AF/FFFFFF?text=Görsel+Yok';">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">NVIDIA GeForce RTX 2060</h2>
+            <ul class="text-gray-700 text-sm space-y-1">
+                <li><strong class="font-semibold">VRAM:</strong> 6GB GDDR6</li>
+                <li><strong class="font-semibold">Veri Yolu Arayüzü:</strong> PCIe 3.0 x16</li>
+                <li><strong class="font-semibold">CUDA Çekirdekleri:</strong> 1920</li>
+            </ul>
+        </div>
+
+        <div class="card bg-white rounded-2xl shadow-xl p-6 transform transition-all duration-300 ease-in-out"
+            data-model="NVIDIA GeForce RTX 2070 SUPER"
+            data-vram="8GB GDDR6"
+            data-bus="PCIe 3.0 x16"
+            data-cuda="2560"
+            data-boost-clock="1.77 GHz"
+            data-memory-speed="14 Gbps"
+            data-tdp="215W">
+            <img src="https://placehold.co/300x200/3B82F6/FFFFFF?text=RTX+2070+SUPER" alt="RTX 2070 SUPER Görseli" class="w-full h-40 object-cover rounded-xl mb-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/300x200/9CA3AF/FFFFFF?text=Görsel+Yok';">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">NVIDIA GeForce RTX 2070 SUPER</h2>
+            <ul class="text-gray-700 text-sm space-y-1">
+                <li><strong class="font-semibold">VRAM:</strong> 8GB GDDR6</li>
+                <li><strong class="font-semibold">Veri Yolu Arayüzü:</strong> PCIe 3.0 x16</li>
+                <li><strong class="font-semibold">CUDA Çekirdekleri:</strong> 2560</li>
+            </ul>
+        </div>
+
+        <div class="card bg-white rounded-2xl shadow-xl p-6 transform transition-all duration-300 ease-in-out"
+            data-model="NVIDIA GeForce RTX 2080 Ti"
+            data-vram="11GB GDDR6"
+            data-bus="PCIe 3.0 x16"
+            data-cuda="4352"
+            data-boost-clock="1.55 GHz"
+            data-memory-speed="14 Gbps"
+            data-tdp="260W">
+            <img src="https://placehold.co/300x200/3B82F6/FFFFFF?text=RTX+2080+Ti" alt="RTX 2080 Ti Görseli" class="w-full h-40 object-cover rounded-xl mb-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/300x200/9CA3AF/FFFFFF?text=Görsel+Yok';">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">NVIDIA GeForce RTX 2080 Ti</h2>
+            <ul class="text-gray-700 text-sm space-y-1">
+                <li><strong class="font-semibold">VRAM:</strong> 11GB GDDR6</li>
+                <li><strong class="font-semibold">Veri Yolu Arayüzü:</strong> PCIe 3.0 x16</li>
+                <li><strong class="font-semibold">CUDA Çekirdekleri:</strong> 4352</li>
+            </ul>
+        </div>
+
+        <!-- RTX 3000 Series Cards -->
+        <div class="card bg-white rounded-2xl shadow-xl p-6 transform transition-all duration-300 ease-in-out"
+            data-model="NVIDIA GeForce RTX 3050"
+            data-vram="8GB GDDR6"
+            data-bus="PCIe 4.0 x8"
+            data-cuda="2560"
+            data-boost-clock="1.78 GHz"
+            data-memory-speed="14 Gbps"
+            data-tdp="130W">
+            <img src="https://placehold.co/300x200/4F46E5/FFFFFF?text=RTX+3050" alt="RTX 3050 Görseli" class="w-full h-40 object-cover rounded-xl mb-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/300x200/9CA3AF/FFFFFF?text=Görsel+Yok';">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">NVIDIA GeForce RTX 3050</h2>
+            <ul class="text-gray-700 text-sm space-y-1">
+                <li><strong class="font-semibold">VRAM:</strong> 8GB GDDR6</li>
+                <li><strong class="font-semibold">Veri Yolu Arayüzü:</strong> PCIe 4.0 x8</li>
+                <li><strong class="font-semibold">CUDA Çekirdekleri:</strong> 2560</li>
+            </ul>
+        </div>
+
+        <div class="card bg-white rounded-2xl shadow-xl p-6 transform transition-all duration-300 ease-in-out"
+            data-model="NVIDIA GeForce RTX 3060"
+            data-vram="12GB GDDR6"
+            data-bus="PCIe 4.0 x16"
+            data-cuda="3584"
+            data-boost-clock="1.78 GHz"
+            data-memory-speed="15 Gbps"
+            data-tdp="170W">
+            <img src="https://placehold.co/300x200/4F46E5/FFFFFF?text=RTX+3060" alt="RTX 3060 Görseli" class="w-full h-40 object-cover rounded-xl mb-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/300x200/9CA3AF/FFFFFF?text=Görsel+Yok';">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">NVIDIA GeForce RTX 3060</h2>
+            <ul class="text-gray-700 text-sm space-y-1">
+                <li><strong class="font-semibold">VRAM:</strong> 12GB GDDR6</li>
+                <li><strong class="font-semibold">Veri Yolu Arayüzü:</strong> PCIe 4.0 x16</li>
+                <li><strong class="font-semibold">CUDA Çekirdekleri:</strong> 3584</li>
+            </ul>
+        </div>
+
+        <div class="card bg-white rounded-2xl shadow-xl p-6 transform transition-all duration-300 ease-in-out"
+            data-model="NVIDIA GeForce RTX 3070"
+            data-vram="8GB GDDR6"
+            data-bus="PCIe 4.0 x16"
+            data-cuda="5888"
+            data-boost-clock="1.73 GHz"
+            data-memory-speed="14 Gbps"
+            data-tdp="220W">
+            <img src="https://placehold.co/300x200/4F46E5/FFFFFF?text=RTX+3070" alt="RTX 3070 Görseli" class="w-full h-40 object-cover rounded-xl mb-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/300x200/9CA3AF/FFFFFF?text=Görsel+Yok';">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">NVIDIA GeForce RTX 3070</h2>
+            <ul class="text-gray-700 text-sm space-y-1">
+                <li><strong class="font-semibold">VRAM:</strong> 8GB GDDR6</li>
+                <li><strong class="font-semibold">Veri Yolu Arayüzü:</strong> PCIe 4.0 x16</li>
+                <li><strong class="font-semibold">CUDA Çekirdekleri:</strong> 5888</li>
+            </ul>
+        </div>
+
+        <div class="card bg-white rounded-2xl shadow-xl p-6 transform transition-all duration-300 ease-in-out"
+            data-model="NVIDIA GeForce RTX 3080"
+            data-vram="10GB/12GB GDDR6X"
+            data-bus="PCIe 4.0 x16"
+            data-cuda="8704/8960"
+            data-boost-clock="1.71 GHz"
+            data-memory-speed="19 Gbps"
+            data-tdp="320W">
+            <img src="https://placehold.co/300x200/4F46E5/FFFFFF?text=RTX+3080" alt="RTX 3080 Görseli" class="w-full h-40 object-cover rounded-xl mb-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/300x200/9CA3AF/FFFFFF?text=Görsel+Yok';">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">NVIDIA GeForce RTX 3080</h2>
+            <ul class="text-gray-700 text-sm space-y-1">
+                <li><strong class="font-semibold">VRAM:</strong> 10GB/12GB GDDR6X</li>
+                <li><strong class="font-semibold">Veri Yolu Arayüzü:</strong> PCIe 4.0 x16</li>
+                <li><strong class="font-semibold">CUDA Çekirdekleri:</strong> 8704/8960</li>
+            </ul>
+        </div>
+
+        <div class="card bg-white rounded-2xl shadow-xl p-6 transform transition-all duration-300 ease-in-out"
+            data-model="NVIDIA GeForce RTX 3090"
+            data-vram="24GB GDDR6X"
+            data-bus="PCIe 4.0 x16"
+            data-cuda="10496"
+            data-boost-clock="1.70 GHz"
+            data-memory-speed="19.5 Gbps"
+            data-tdp="350W">
+            <img src="https://placehold.co/300x200/4F46E5/FFFFFF?text=RTX+3090" alt="RTX 3090 Görseli" class="w-full h-40 object-cover rounded-xl mb-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/300x200/9CA3AF/FFFFFF?text=Görsel+Yok';">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">NVIDIA GeForce RTX 3090</h2>
+            <ul class="text-gray-700 text-sm space-y-1">
+                <li><strong class="font-semibold">VRAM:</strong> 24GB GDDR6X</li>
+                <li><strong class="font-semibold">Veri Yolu Arayüzü:</strong> PCIe 4.0 x16</li>
+                <li><strong class="font-semibold">CUDA Çekirdekleri:</strong> 10496</li>
+            </ul>
+        </div>
+
+        <!-- RTX 4000 Series Cards -->
+        <div class="card bg-white rounded-2xl shadow-xl p-6 transform transition-all duration-300 ease-in-out"
+            data-model="NVIDIA GeForce RTX 4060"
+            data-vram="8GB GDDR6"
+            data-bus="PCIe 4.0 x8"
+            data-cuda="3072"
+            data-boost-clock="2.46 GHz"
+            data-memory-speed="17 Gbps"
+            data-tdp="115W">
+            <img src="https://placehold.co/300x200/4F46E5/FFFFFF?text=RTX+4060" alt="RTX 4060 Görseli" class="w-full h-40 object-cover rounded-xl mb-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/300x200/9CA3AF/FFFFFF?text=Görsel+Yok';">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">NVIDIA GeForce RTX 4060</h2>
+            <ul class="text-gray-700 text-sm space-y-1">
+                <li><strong class="font-semibold">VRAM:</strong> 8GB GDDR6</li>
+                <li><strong class="font-semibold">Veri Yolu Arayüzü:</strong> PCIe 4.0 x8</li>
+                <li><strong class="font-semibold">CUDA Çekirdekleri:</strong> 3072</li>
+            </ul>
+        </div>
+
+        <div class="card bg-white rounded-2xl shadow-xl p-6 transform transition-all duration-300 ease-in-out"
+            data-model="NVIDIA GeForce RTX 4070"
+            data-vram="12GB GDDR6X"
+            data-bus="PCIe 4.0 x16"
+            data-cuda="5888"
+            data-boost-clock="2.48 GHz"
+            data-memory-speed="21 Gbps"
+            data-tdp="200W">
+            <img src="https://placehold.co/300x200/4F46E5/FFFFFF?text=RTX+4070" alt="RTX 4070 Görseli" class="w-full h-40 object-cover rounded-xl mb-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/300x200/9CA3AF/FFFFFF?text=Görsel+Yok';">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">NVIDIA GeForce RTX 4070</h2>
+            <ul class="text-gray-700 text-sm space-y-1">
+                <li><strong class="font-semibold">VRAM:</strong> 12GB GDDR6X</li>
+                <li><strong class="font-semibold">Veri Yolu Arayüzü:</strong> PCIe 4.0 x16</li>
+                <li><strong class="font-semibold">CUDA Çekirdekleri:</strong> 5888</li>
+            </ul>
+        </div>
+
+        <div class="card bg-white rounded-2xl shadow-xl p-6 transform transition-all duration-300 ease-in-out"
+            data-model="NVIDIA GeForce RTX 4080"
+            data-vram="16GB GDDR6X"
+            data-bus="PCIe 4.0 x16"
+            data-cuda="9728"
+            data-boost-clock="2.51 GHz"
+            data-memory-speed="22.4 Gbps"
+            data-tdp="320W">
+            <img src="https://placehold.co/300x200/4F46E5/FFFFFF?text=RTX+4080" alt="RTX 4080 Görseli" class="w-full h-40 object-cover rounded-xl mb-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/300x200/9CA3AF/FFFFFF?text=Görsel+Yok';">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">NVIDIA GeForce RTX 4080</h2>
+            <ul class="text-gray-700 text-sm space-y-1">
+                <li><strong class="font-semibold">VRAM:</strong> 16GB GDDR6X</li>
+                <li><strong class="font-semibold">Veri Yolu Arayüzü:</strong> PCIe 4.0 x16</li>
+                <li><strong class="font-semibold">CUDA Çekirdekleri:</strong> 9728</li>
+            </ul>
+        </div>
+
+        <div class="card bg-white rounded-2xl shadow-xl p-6 transform transition-all duration-300 ease-in-out"
+            data-model="NVIDIA GeForce RTX 4090"
+            data-vram="24GB GDDR6X"
+            data-bus="PCIe 4.0 x16"
+            data-cuda="16384"
+            data-boost-clock="2.52 GHz"
+            data-memory-speed="21 Gbps"
+            data-tdp="450W">
+            <img src="https://placehold.co/300x200/4F46E5/FFFFFF?text=RTX+4090" alt="RTX 4090 Görseli" class="w-full h-40 object-cover rounded-xl mb-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/300x200/9CA3AF/FFFFFF?text=Görsel+Yok';">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">NVIDIA GeForce RTX 4090</h2>
+            <ul class="text-gray-700 text-sm space-y-1">
+                <li><strong class="font-semibold">VRAM:</strong> 24GB GDDR6X</li>
+                <li><strong class="font-semibold">Veri Yolu Arayüzü:</strong> PCIe 4.0 x16</li>
+                <li><strong class="font-semibold">CUDA Çekirdekleri:</strong> 16384</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="cardModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-button" id="closeModal">&times;</button>
+            <h2 id="modalTitle" class="text-3xl font-extrabold text-gray-900 mb-6 border-b pb-3 border-gray-200"></h2>
+            <div id="modalBody" class="text-gray-800 text-lg space-y-4">
+                <!-- Card details will be inserted here by JavaScript -->
+            </div>
+            <div class="mt-8 flex justify-center">
+                <button onclick="window.open('https://www.nvidia.com/tr-tr/geforce/graphics-cards/rtx/', '_blank')" class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-200 ease-in-out transform hover:scale-105">
+                    Daha Fazla Bilgi Edinin
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const cards = document.querySelectorAll(".card");
+            const modal = document.getElementById("cardModal");
+            const closeModalBtn = document.getElementById("closeModal");
+            const modalTitle = document.getElementById("modalTitle");
+            const modalBody = document.getElementById("modalBody");
+
+            // Initial fade-in animation for cards
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add("fade-in");
+                }, index * 100 + 300); // Added a slight initial delay for overall page load
+            });
+
+            // Add click listener to each card
+            cards.forEach(card => {
+                card.addEventListener("click", () => {
+                    // Get data from clicked card
+                    const model = card.dataset.model;
+                    const vram = card.dataset.vram;
+                    const bus = card.dataset.bus;
+                    const cuda = card.dataset.cuda;
+                    const boostClock = card.dataset.boostClock;
+                    const memorySpeed = card.dataset.memorySpeed;
+                    const tdp = card.dataset.tdp;
+
+                    // Populate modal
+                    modalTitle.textContent = model;
+                    modalBody.innerHTML = `
+                        <div class="feature-item">
+                            <span class="feature-icon">&#128187;</span> <!-- Computer emoji -->
+                            <p><strong class="font-semibold">VRAM:</strong> ${vram}</p>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">&#128200;</span> <!-- Chart increasing emoji -->
+                            <p><strong class="font-semibold">Veri Yolu Arayüzü:</strong> ${bus}</p>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">&#9889;</span> <!-- High voltage sign emoji -->
+                            <p><strong class="font-semibold">CUDA Çekirdekleri:</strong> ${cuda}</p>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">&#9200;</span> <!-- Stopwatch emoji -->
+                            <p><strong class="font-semibold">Boost Clock:</strong> ${boostClock}</p>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">&#128218;</span> <!-- Book emoji for memory -->
+                            <p><strong class="font-semibold">Bellek Hızı:</strong> ${memorySpeed}</p>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">&#128293;</span> <!-- Fire emoji for power -->
+                            <p><strong class="font-semibold">TDP:</strong> ${tdp}</p>
+                        </div>
+                    `;
+
+                    // Show modal
+                    modal.classList.add("open");
+                });
+            });
+
+            // Close modal functions
+            function closeCardModal() {
+                modal.classList.remove("open");
+            }
+
+            // Close modal when close button is clicked
+            closeModalBtn.addEventListener("click", closeCardModal);
+
+            // Close modal when clicking outside the content
+            modal.addEventListener("click", (event) => {
+                if (event.target === modal) {
+                    closeCardModal();
+                }
+            });
+
+            // Close modal when Escape key is pressed
+            document.addEventListener("keydown", (event) => {
+                if (event.key === "Escape" && modal.classList.contains("open")) {
+                    closeCardModal();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
